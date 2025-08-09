@@ -1,3 +1,25 @@
+/**
+ * =============================
+ * Header (site-wide navigation)
+ * =============================
+ * This file renders:
+ *  - Mobile/Tablet header (≤ md)
+ *  - Desktop header (≥ md)
+ *  - Mobile side drawer with search, language, quick actions, and nav links
+ *  - Favorites & Cart sidepanels (local components)
+ *
+ * State managed here:
+ *  - isMenuOpen: controls the mobile side drawer
+ *  - lang / isLangOpen: controls language value and dropdown open state
+ *  - isFavOpen / isCartOpen: controls the two sidepanels
+ *  - favorites / cartItems: demo arrays (replace with your real app state)
+ *
+ * Animation:
+ *  - framer-motion is used for spring-based entrances and slide-in panels
+ *
+ * Accessibility:
+ *  - aria-labels on buttons and panels, aria-modal on slide-in dialogs
+ */
 /* eslint-disable jsx-a11y/alt-text */
 "use client";
 
@@ -5,175 +27,49 @@ import React, { useState } from "react";
 import { FaHeart, FaShoppingCart, FaSearch, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import "flag-icons/css/flag-icons.min.css";
 import { motion, AnimatePresence } from "framer-motion";
+import FavoritesSidepanel, { FavoriteItem } from "./FavoritesSidepanel";
+import CartSidepanel, { CartItem } from "./CartSidepanel";
 
-// Types for demo purposes (replace with your app's real types/state)
-interface FavoriteItem {
-  id: string;
-  title: string;
-  image: string;
-  price?: number;
-}
 
-interface CartItem {
-  id: string;
-  title: string;
-  image: string;
-  price: number;
-  quantity: number;
-}
-
-// Favorites sidepanel component (local)
-const FavoritesSidepanel: React.FC<{
-  isOpen: boolean;
-  onClose: () => void;
-  items: FavoriteItem[];
-}> = ({ isOpen, onClose, items }) => (
-  <AnimatePresence>
-    {isOpen && (
-      <>
-        <motion.div
-          className="fixed inset-0 z-[65] bg-black/40"
-          onClick={onClose}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        />
-        <motion.aside
-          className="fixed right-0 top-0 h-full w-[90vw] max-w-md z-[70] bg-white shadow-2xl flex flex-col"
-          initial={{ x: '100%' }}
-          animate={{ x: 0 }}
-          exit={{ x: '100%' }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Favorites"
-        >
-          <div className="flex items-center justify-between p-4 border-b">
-            <div className="text-base font-semibold">Your Favorites</div>
-            <button aria-label="Close favorites" onClick={onClose} className="p-2 rounded-md hover:bg-gray-100">
-              <FaTimes className="text-lg" />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-4">
-            {items.length === 0 ? (
-              <div className="text-center text-gray-500 py-12">No favorites yet</div>
-            ) : (
-              <ul className="space-y-3">
-                {items.map((it) => (
-                  <li key={it.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={it.image} alt="" className="w-16 h-16 rounded object-cover" />
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate font-medium text-sm">{it.title}</div>
-                      {typeof it.price === 'number' && (
-                        <div className="text-xs text-gray-500">{it.price.toFixed(2)} €</div>
-                      )}
-                    </div>
-                    <button className="text-xs px-2 py-1 rounded border hover:bg-gray-100">View</button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </motion.aside>
-      </>
-    )}
-  </AnimatePresence>
-);
-
-// Cart sidepanel component (local)
-const CartSidepanel: React.FC<{
-  isOpen: boolean;
-  onClose: () => void;
-  items: CartItem[];
-}> = ({ isOpen, onClose, items }) => {
-  const total = items.reduce((acc, it) => acc + it.price * it.quantity, 0);
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div
-            className="fixed inset-0 z-[65] bg-black/40"
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
-          <motion.aside
-            className="fixed right-0 top-0 h-full w-[90vw] max-w-md z-[70] bg-white shadow-2xl flex flex-col"
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Shopping cart"
-          >
-            <div className="flex items-center justify-between p-4 border-b">
-              <div className="text-base font-semibold">Your Cart</div>
-              <button aria-label="Close cart" onClick={onClose} className="p-2 rounded-md hover:bg-gray-100">
-                <FaTimes className="text-lg" />
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto p-4">
-              {items.length === 0 ? (
-                <div className="text-center text-gray-500 py-12">Your cart is empty</div>
-              ) : (
-                <ul className="space-y-3">
-                  {items.map((it) => (
-                    <li key={it.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={it.image} alt="" className="w-16 h-16 rounded object-cover" />
-                      <div className="min-w-0 flex-1">
-                        <div className="truncate font-medium text-sm">{it.title}</div>
-                        <div className="text-xs text-gray-500">{it.price.toFixed(2)} €</div>
-                        <div className="mt-2 text-xs text-gray-600">Qty: {it.quantity}</div>
-                      </div>
-                      <div className="text-sm font-semibold">{(it.price * it.quantity).toFixed(2)} €</div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            <div className="border-t p-4">
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-medium">Total</span>
-                <span className="font-semibold">{total.toFixed(2)} €</span>
-              </div>
-              <button className="w-full py-2 rounded-md bg-black text-white hover:opacity-90 active:scale-[.99] transition">
-                Checkout
-              </button>
-            </div>
-          </motion.aside>
-        </>
-      )}
-    </AnimatePresence>
-  );
-};
-
+// -----------------------------------------------------------------------------
+// Header: Top-level navigation wrapper
+// Layout map:
+//   <header>
+//     ├─ MobileHeader (≤ md)
+//     ├─ DesktopHeader (≥ md)
+//     ├─ MobileDrawer (off-canvas)
+//     ├─ FavoritesSidepanel (off-canvas)
+//     └─ CartSidepanel (off-canvas)
+// -----------------------------------------------------------------------------
 const Header: React.FC = () => {
+  // --- UI State ---------------------------------------------------------------
+  // Drawer visibility, language selection, and panel toggles
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [lang, setLang] = useState<"en" | "el">("en");
   const [isLangOpen, setLangOpen] = useState(false);
   const [isFavOpen, setFavOpen] = useState(false);
   const [isCartOpen, setCartOpen] = useState(false);
 
-  // Demo data — replace with real state/context
+  // --- Demo Data (replace with real state/context) ----------------------------
+  // In production, lift these into a store/context (e.g., Zustand/Redux) or
+  // fetch from your backend. They are here only so the UI can be previewed.
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   return (
     <header className="fixed top-0 left-0 w-full z-50">
-      {/* Mobile / Tablet (≤ md) */}
+      {/* =====================================================================
+          Mobile / Tablet Header (≤ md)
+          - Left: language dropdown
+          - Center: logo
+          - Right: hamburger to open the drawer
+         ===================================================================== */}
       <motion.div
         className="flex md:hidden w-full items-center justify-between px-4 py-5 bg-white/90 backdrop-blur-md shadow-sm ring-1 ring-black/10"
         initial={{ y: -16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 150, damping: 10, delay: 0 }}
       >
-        {/* Left: language */}
+        {/* Language selector (flag + chevron) */}
         <div className="relative flex items-center">
           <button
             type="button"
@@ -224,7 +120,7 @@ const Header: React.FC = () => {
           </AnimatePresence>
         </div>
 
-        {/* Center: logo */}
+        {/* Center logo (I ❤ MY / BIKE) */}
         <div className="leading-tight mr-6 text-center select-none">
           <div className="flex items-center justify-center gap-1 text-xs font-extrabold tracking-wide text-gray-900">
             <span>I</span>
@@ -247,7 +143,7 @@ const Header: React.FC = () => {
           <div className="text-xs font-extrabold tracking-wide text-gray-900">BIKE</div>
         </div>
 
-        {/* Right: actions */}
+        {/* Right-side actions (hamburger opens the drawer) */}
         <div className="flex items-center gap-4">
           <button aria-label="Menu" onClick={() => { setMenuOpen(true); setLangOpen(false); setFavOpen(false); }} className="p-1.5 rounded-md hover:bg-gray-100 active:scale-95 transition">
             <FaBars className="text-gray-700 text-lg" />
@@ -255,7 +151,12 @@ const Header: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Desktop (≥ md by design, shown ≥ md) */}
+      {/* =====================================================================
+          Desktop Header (≥ md)
+          - Left: language + nav links
+          - Center: logo
+          - Right: search + favorites + cart
+         ===================================================================== */}
       <motion.div
         className="hidden md:flex w-full justify-center pt-4"
         initial={{ y: -20, opacity: 0 }}
@@ -263,7 +164,7 @@ const Header: React.FC = () => {
         transition={{ type: "spring", stiffness: 150, damping: 10 }}
       >
         <div className="w-[95%] max-w-fit rounded-2xl bg-white/90 backdrop-blur-md shadow-sm ring-1 ring-black/10 px-4 sm:px-6 py-3 items-center justify-between gap-8 flex">
-          {/* Left: flag and nav */}
+          {/* Left cluster: language dropdown + primary nav */}
           <div className="flex items-center gap-3">
             <div className="relative">
               <button
@@ -315,13 +216,13 @@ const Header: React.FC = () => {
               </AnimatePresence>
             </div>
             <nav className="hidden sm:flex items-center gap-8 pl-8 pr-6 text-gray-700">
-              <a href="#" className="hover:text-black">Home</a>
-              <a href="#" className="hover:text-black">Shop</a>
-              <a href="#" className="hover:text-black">Contact</a>
+              <a href="#" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Home</a>
+              <a href="#" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Shop</a>
+              <a href="#" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Contact</a>
             </nav>
           </div>
 
-          {/* Center: logo */}
+          {/* Center logo */}
           <div className="flex-1 flex justify-center">
             <div className="leading-tight text-center select-none">
               <div className="flex items-center justify-center gap-1 text-sm font-extrabold tracking-wide text-gray-900">
@@ -346,7 +247,7 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Right: search + icons */}
+          {/* Right controls: search field + favorites + cart */}
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center bg-gray-100 rounded-full px-3 py-2 w-64">
               <FaSearch className="mr-2 text-gray-400" />
@@ -377,9 +278,14 @@ const Header: React.FC = () => {
         </div>
       </motion.div>
 
+      {/* =====================================================================
+          Mobile Drawer (off-canvas right)
+          Contains: inline logo, search, quick actions, language toggles, nav
+         ===================================================================== */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
+            {/* Drawer overlay (closes on click) */}
             <motion.div
               className="fixed inset-0 z-[55] bg-black/30"
               onClick={() => { setMenuOpen(false); setFavOpen(false); }}
@@ -388,6 +294,7 @@ const Header: React.FC = () => {
               exit={{ opacity: 0 }}
             />
 
+            {/* Drawer panel */}
             <motion.aside
               className="fixed top-0 right-0 z-[60] h-full w-80 max-w-[85vw] bg-white shadow-xl flex flex-col"
               initial={{ x: "100%" }}
@@ -395,7 +302,7 @@ const Header: React.FC = () => {
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              {/* Header row inside drawer */}
+              {/* Drawer header with inline logo + close button */}
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="leading-tight text-center select-none">
                   <div className="flex items-center justify-center gap-1 text-sm font-extrabold tracking-wide text-gray-900">
@@ -418,7 +325,7 @@ const Header: React.FC = () => {
                 </button>
               </div>
 
-              {/* Search inside drawer */}
+              {/* Drawer search */}
               <div className="p-4 border-b">
                 <div className="flex items-center bg-gray-100 rounded-lg px-3 py-2">
                   <FaSearch className="mr-2 text-gray-400" />
@@ -430,7 +337,7 @@ const Header: React.FC = () => {
                 </div>
               </div>
 
-              {/* Quick actions */}
+              {/* Drawer quick actions + language toggles */}
               <div className="p-4 border-b">
                 <div className="flex items-stretch gap-3">
                   <button
@@ -470,23 +377,23 @@ const Header: React.FC = () => {
                 </div>
               </div>
 
-              {/* Nav links */}
+              {/* Drawer primary nav links */}
               <nav className="p-4 flex flex-col gap-3 text-gray-700">
                 <a
                   href="#"
-                  className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium shadow-sm transition hover:-translate-y-[1px] hover:shadow md:active:translate-y-0"
+                  className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium transition hover:bg-gray-100 transition-colors "
                 >
                   Home
                 </a>
                 <a
                   href="#"
-                  className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium shadow-sm transition hover:-translate-y-[1px] hover:shadow md:active:translate-y-0"
+                  className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium transition hover:bg-gray-100 transition-colors "
                 >
                   Shop
                 </a>
                 <a
                   href="#"
-                  className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium shadow-sm transition hover:-translate-y-[1px] hover:shadow md:active:translate-y-0"
+                  className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium transition hover:bg-gray-100 transition-colors "
                 >
                   Contact
                 </a>
@@ -496,10 +403,14 @@ const Header: React.FC = () => {
         )}
       </AnimatePresence>
 
+      {/* =====================================================================
+          Sidepanels Mount Points (outside of drawer)
+         ===================================================================== */}
       <FavoritesSidepanel isOpen={isFavOpen} onClose={() => setFavOpen(false)} items={favorites} />
       <CartSidepanel isOpen={isCartOpen} onClose={() => setCartOpen(false)} items={cartItems} />
     </header>
   );
 };
 
+// Export for app-wide usage
 export default Header;
