@@ -23,7 +23,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaHeart, FaShoppingCart, FaSearch, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import "flag-icons/css/flag-icons.min.css";
 import { motion, AnimatePresence } from "framer-motion";
@@ -50,6 +50,15 @@ const Header: React.FC = () => {
   const [isFavOpen, setFavOpen] = useState(false);
   const [isCartOpen, setCartOpen] = useState(false);
 
+  // --- Track scroll position for header background ----------------------------
+  const [isScrolled, setIsScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 0);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   // --- Demo Data (replace with real state/context) ----------------------------
   // In production, lift these into a store/context (e.g., Zustand/Redux) or
   // fetch from your backend. They are here only so the UI can be previewed.
@@ -64,10 +73,10 @@ const Header: React.FC = () => {
           - Right: hamburger to open the drawer
          ===================================================================== */}
       <motion.div
-        className="flex md:hidden w-full items-center justify-between px-4 py-5 bg-white/90 backdrop-blur-md shadow-sm ring-1 ring-black/10"
+        className={`flex md:hidden w-full items-center justify-between px-4 py-6.5 transition-colors ${isScrolled ? "bg-white/60 shadow-sm backdrop-blur-xl" : "bg-transparent shadow-none backdrop-blur-none"}`}
         initial={{ y: -16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 150, damping: 10, delay: 0 }}
+        transition={{ type: "spring", stiffness: 150, damping: 10, delay: 1.5 }}
       >
         {/* Language selector (flag + chevron) */}
         <div className="relative flex items-center">
@@ -122,13 +131,14 @@ const Header: React.FC = () => {
 
         {/* Center logo (I ❤ MY / BIKE) */}
         <div className="leading-tight mr-6 text-center select-none">
-          <div className="flex items-center justify-center gap-1 text-xs font-extrabold tracking-wide text-gray-900">
+          <div className="flex items-center justify-center gap-2 text-2xl transform translate-y-0.5 font-extrabold tracking-wide text-gray-900">
             <span>I</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
-              className="w-3.5 h-3.5 inline-block align-middle"
+              className="w-4.5 h-4.5 inline-block align-middle"
               fill="url(#goldHeart)"
+              style={{ width: "1.4rem", height: "1.4rem" }}
             >
               <defs>
                 <linearGradient id="goldHeart" x1="0%" y1="100%" x2="100%" y2="0%">
@@ -140,7 +150,7 @@ const Header: React.FC = () => {
             </svg>
             <span>MY</span>
           </div>
-          <div className="text-xs font-extrabold tracking-wide text-gray-900">BIKE</div>
+          <div className="text-2xl font-extrabold tracking-wide mr-1 transform -translate-y-0.5 text-gray-900">BIKE</div>
         </div>
 
         {/* Right-side actions (hamburger opens the drawer) */}
@@ -161,9 +171,9 @@ const Header: React.FC = () => {
         className="hidden md:flex w-full justify-center pt-4"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 150, damping: 10 }}
+        transition={{ type: "spring", stiffness: 150, damping: 10, delay: 1.5 }}
       >
-        <div className="w-[95%] max-w-fit rounded-2xl bg-white/90 backdrop-blur-md shadow-sm ring-1 ring-black/10 px-4 sm:px-6 py-3 items-center justify-between gap-8 flex">
+        <div className="w-[95%] max-w-fit rounded-full bg-white/95 backdrop-blur-sm px-4 ring-1 ring-slate-200 sm:px-6 py-2.5 items-center justify-between  gap-8 flex">
           {/* Left cluster: language dropdown + primary nav */}
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -215,7 +225,7 @@ const Header: React.FC = () => {
                 )}
               </AnimatePresence>
             </div>
-            <nav className="hidden sm:flex items-center gap-8 pl-8 pr-6 text-gray-700">
+            <nav className="hidden sm:flex items-center gap-6 pl-8 pr-6 text-gray-700">
               <a href="#" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Home</a>
               <a href="#" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Shop</a>
               <a href="#" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Contact</a>
