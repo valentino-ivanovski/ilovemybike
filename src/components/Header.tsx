@@ -73,7 +73,7 @@ const Header: React.FC = () => {
           - Right: hamburger to open the drawer
          ===================================================================== */}
       <motion.div
-        className={`flex md:hidden w-full items-center justify-between px-4 py-6.5 transition-colors ${isScrolled ? "bg-white/60 shadow-sm backdrop-blur-xl" : "bg-transparent shadow-none backdrop-blur-none"}`}
+        className={`flex md:hidden w-full items-center justify-between px-4 py-6.5 transition-colors ${isScrolled ? "bg-white/80 shadow-sm backdrop-blur-xl" : "bg-transparent shadow-none backdrop-blur-none"}`}
         initial={{ y: -16, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 150, damping: 10, delay: 1.5 }}
