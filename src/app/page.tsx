@@ -77,7 +77,7 @@ export default function Home() {
                 width={2000}
                 height={1300}
                 quality={100}
-                className="w-full h-full object-contain transform md:-translate-x-[20%] md:translate-y-[3%] sm:-translate-y-[20%] sm:translate-x-[20%] -translate-y-[32.7%] translate-x-[40%] scale-[1.6] sm:scale-[1.2] md:scale-[1.4] [@media_(min-width:444px)_and_(max-width:650px)]:scale-[1.4] [@media_(min-width:444px)_and_(max-width:650px)]:translate-x-[30%] [@media_(min-width:444px)_and_(max-width:650px)]:-translate-y-[28%]"
+                className="w-full h-full object-contain transform md:-translate-x-[20%] md:translate-y-[3%] sm:-translate-y-[20%] sm:translate-x-[20%] -translate-y-[35%] translate-x-[38%] scale-[1.6] sm:scale-[1.2] md:scale-[1.4] [@media_(min-width:444px)_and_(max-width:650px)]:scale-[1.4] [@media_(min-width:444px)_and_(max-width:650px)]:translate-x-[30%] [@media_(min-width:444px)_and_(max-width:650px)]:-translate-y-[28%]"
               />
             </motion.div>
           </motion.div>
@@ -129,7 +129,7 @@ export default function Home() {
             </motion.button>
         </motion.div>
         </div>
-        <div className="absolute bottom-5 sm:bottom-5 left-1/2 transform -translate-x-1/2 animate-bounce text-gray-300 text-3xl">
+        <div className="absolute bottom-7 sm:bottom-5 left-1/2 transform -translate-x-1/2 animate-bounce text-gray-300 text-3xl">
           <IoIosArrowDown />
         </div>
       </section>
