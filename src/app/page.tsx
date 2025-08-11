@@ -6,6 +6,11 @@ import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import Header from "@/components/Header";
 import { IoIosArrowDown } from "react-icons/io";
+import Marquee from "react-fast-marquee";
+import CategoriesCarousel from "@/components/CategoriesCarousel"; 
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { useCallback, useEffect, useState } from "react";
 
 const container: Variants = {
   hidden: { opacity: 0 },
@@ -49,7 +54,39 @@ const imageEnter: Variants = {
   },
 };
 
+const heroSlides = [
+  {
+    heading: "Some placeholder text goes here.",
+    subtext: "Short supporting copy for slide one — swap with real content later.",
+    cta: "Shop Now",
+  },
+  {
+    heading: "Another placeholder headline.",
+    subtext: "Second slide copy. Keep it brief so it looks clean on the image.",
+    cta: "Shop Now",
+  },
+  {
+    heading: "Final placeholder headline.",
+    subtext: "Third slide copy to demo autoplay between slides.",
+    cta: "Shop Now",
+  },
+];
+
 export default function Home() {
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: true, align: "start" },
+    [Autoplay({ delay: 4000, stopOnMouseEnter: true, stopOnInteraction: false })]
+  );
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    emblaApi.on("select", onSelect);
+  }, [emblaApi, onSelect]);
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-radial from-white to-[#E9E9E9]">
       <Header />
@@ -134,8 +171,88 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="flex flex-col items-center justify-center w-full h-screen bg-gray-100">
-        this where the marquee goes
+
+      {/* Marquee Section */}
+      <section className="flex flex-col items-center justify-center w-full h-40">
+        <Marquee>
+          {["/logos/cube.svg", "/logos/bach.png", "/logos/orient-logo-black.svg", "/logos/cannondale-logo-black.svg", "/logos/samebike.png", "/logos/shengmilo.png"].map((logo, index) => (
+            <div key={index} className="mx-13">
+              <Image
+                src={logo}
+                alt={`Logo ${index + 1}`}
+                width={200}
+                height={100}
+                className="object-contain"
+              />
+            </div>
+          ))}
+        </Marquee>
+      </section>
+
+
+      {/* Categories Section */}
+      <section className="w-full py-10 md:py-10">
+        <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6">
+
+          {/* Carousel with responsive items */}
+          <CategoriesCarousel />
+        </div>
+      </section>
+
+      <section className="w-full py-5 px-4 md:px-7 bg-transparent rounded-3xl max-w-[1200px]">
+        <div className="mx-auto w-full max-w-[1200px] bg-transparent rounded-3xl">
+          {/* Embla Hero Carousel */}
+          <div className="embla bg-transparent">
+            <div className="embla__viewport overflow-hidden bg-transparent rounded-3xl" ref={emblaRef}>
+              <div className="embla__container flex touch-pan-y select-none gap-2 bg-transparent rounded-3xl">
+                {heroSlides.map((slide, idx) => (
+                  <div
+                    key={idx}
+                    className="embla__slide relative flex-[0_0_100%] min-w-0 rounded-3xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.12)]"
+                  >
+                    {/* Background image */}
+                    <Image
+                      src="/images/3.webp?v2"
+                      alt="Cycling road background"
+                      fill
+                      priority={idx === 0}
+                      className="object-cover rounded-3xl pr-1 pl-1 bg-transparent"
+                    />
+                    {/* Soft overlay for legibility */}
+                    <div className="absolute inset-0 bg-transparent" />
+
+                    {/* Slide content */}
+                    <div className="relative z-10 p-6 sm:p-10 md:p-14 max-w-xl text-white">
+                      <h3 className="text-3xl md:text-5xl font-bold leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)]">
+                        {slide.heading}
+                      </h3>
+                      <p className="mt-4 text-base md:text-lg text-white/90 max-w-prose">
+                        {slide.subtext}
+                      </p>
+                      <button className="mt-6 rounded-full px-5 py-2.5 bg-white/85 text-gray-900 backdrop-blur supports-[backdrop-filter]:bg-white/70 hover:bg-white transition">
+                        {slide.cta}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Dots indicator */}
+            <div className="mt-4 flex items-center justify-center gap-3">
+              {heroSlides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => emblaApi && emblaApi.scrollTo(i)}
+                  aria-label={`Go to slide ${i + 1}`}
+                  className={`h-[3px] md:h-[2px] rounded-full transition-all duration-300 ${
+                    selectedIndex === i ? "w-16 bg-gray-900/70" : "w-8 bg-gray-400/50"
+                  }`}
+                />)
+              )}
+            </div>
+          </div>
+        </div>
       </section>
 
     </div>
