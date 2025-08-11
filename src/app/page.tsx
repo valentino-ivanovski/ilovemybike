@@ -173,10 +173,10 @@ export default function Home() {
 
 
       {/* Marquee Section */}
-      <section className="flex flex-col items-center justify-center w-full h-40">
+      <section className="flex flex-col items-center justify-center w-full h-20 md:h-40">
         <Marquee>
           {["/logos/cube.svg", "/logos/bach.png", "/logos/orient-logo-black.svg", "/logos/cannondale-logo-black.svg", "/logos/samebike.png", "/logos/shengmilo.png"].map((logo, index) => (
-            <div key={index} className="mx-13">
+            <div key={index} className="md:mx-13 mx-10">
               <Image
                 src={logo}
                 alt={`Logo ${index + 1}`}
@@ -192,23 +192,23 @@ export default function Home() {
 
       {/* Categories Section */}
       <section className="w-full py-10 md:py-10">
-        <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6">
+        <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6 ">
 
           {/* Carousel with responsive items */}
           <CategoriesCarousel />
         </div>
       </section>
 
-      <section className="w-full pb-5 md:py-5 px-4 md:px-7 bg-transparent rounded-3xl max-w-[1200px]">
+      <section className="w-full pb-5 md:px-7.5 px-6 bg-transparent rounded-3xl max-w-[1200px]">
         <div className="mx-auto w-full max-w-[1200px] bg-transparent rounded-3xl">
           {/* Embla Hero Carousel */}
           <div className="embla bg-transparent">
             <div className="embla__viewport overflow-hidden bg-transparent rounded-3xl" ref={emblaRef}>
-              <div className="embla__container flex touch-pan-y select-none gap-2 bg-transparent rounded-3xl">
+              <div className="embla__container flex touch-pan-y select-none gap-2 pxl-2 bg-transparent rounded-3xl">
                 {heroSlides.map((slide, idx) => (
                   <div
                     key={idx}
-                    className="embla__slide relative flex-[0_0_100%] min-w-0 rounded-3xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.12)]"
+                    className="embla__slide relative flex-[0_0_100%] min-w-0 rounded-3xl overflow-hidden"
                   >
                     {/* Background image */}
                     <Image
@@ -216,7 +216,7 @@ export default function Home() {
                       alt="Cycling road background"
                       fill
                       priority={idx === 0}
-                      className="object-cover rounded-3xl pr-1 pl-1 bg-transparent"
+                      className="object-cover rounded-3xl bg-transparent"
                     />
                     {/* Soft overlay for legibility */}
                     <div className="absolute inset-0 bg-transparent" />
