@@ -199,7 +199,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="w-full py-5 px-4 md:px-7 bg-transparent rounded-3xl max-w-[1200px]">
+      <section className="w-full pb-5 md:py-5 px-4 md:px-7 bg-transparent rounded-3xl max-w-[1200px]">
         <div className="mx-auto w-full max-w-[1200px] bg-transparent rounded-3xl">
           {/* Embla Hero Carousel */}
           <div className="embla bg-transparent">
@@ -222,16 +222,22 @@ export default function Home() {
                     <div className="absolute inset-0 bg-transparent" />
 
                     {/* Slide content */}
-                    <div className="relative z-10 p-6 sm:p-10 md:p-14 max-w-xl text-white">
+                    <div className="relative z-10 h-full flex flex-col justify-center p-6 sm:p-10 md:p-14 max-w-xl text-white">
                       <h3 className="text-3xl md:text-5xl font-bold leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)]">
                         {slide.heading}
                       </h3>
                       <p className="mt-4 text-base md:text-lg text-white/90 max-w-prose">
                         {slide.subtext}
                       </p>
-                      <button className="mt-6 rounded-full px-5 py-2.5 bg-white/85 text-gray-900 backdrop-blur supports-[backdrop-filter]:bg-white/70 hover:bg-white transition">
+                        <motion.button
+                        variants={item}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        className="mt-6 rounded-full px-4 py-2 cursor-pointer bg-gradient-to-tr from-[#BDBDBD] text-black/90 to-white w-full sm:w-auto sm:max-w-fit"
+                        >
                         {slide.cta}
-                      </button>
+                        </motion.button>
                     </div>
                   </div>
                 ))}
