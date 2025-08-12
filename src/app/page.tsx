@@ -201,7 +201,7 @@ export default function Home() {
 
       <section className="w-full pb-5 md:px-7.5 px-6 bg-transparent rounded-3xl max-w-[1200px]">
         <div className="mx-auto w-full max-w-[1200px] bg-transparent rounded-3xl">
-          {/* Embla Hero Carousel */}
+          {/* Embla Hero Carousel Three Card Component*/}
           <div className="embla bg-transparent">
             <div className="embla__viewport overflow-hidden bg-transparent rounded-3xl" ref={emblaRef}>
               <div className="embla__container flex touch-pan-y select-none gap-2 pxl-2 bg-transparent rounded-3xl">
