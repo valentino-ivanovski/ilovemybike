@@ -68,25 +68,16 @@ export default function CategoriesCarousel() {
           ))}
         </CarouselContent>
       </Carousel>
-      {/* Mobile/Tablet controls: subtle circular arrows (bottom-right, under cards) */}
-      <div className="mt-3 flex justify-end xl:hidden" aria-label="Carousel controls">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => api && api.scrollPrev()}
-            className="h-9 w-9 rounded-full border border-black/10 bg-white/70 shadow-sm backdrop-blur-sm flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.9] transition"
-            aria-label="Previous"
-          >
-            <IoIosArrowBack className="text-black/70" />
-          </button>
-          <button
-            type="button"
-            onClick={() => api && api.scrollNext()}
-            className="h-9 w-9 rounded-full border border-black/10 bg-white/70 shadow-sm backdrop-blur-sm flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.90] transition"
-            aria-label="Next"
-          >
-            <IoIosArrowForward className="text-black/70" />
-          </button>
+      {/* Right-edge fade hint (mobile/tablet) */}
+      {/* Mobile/Tablet indicator: progress bar + swipe hint */}
+      <div className="mt-4 xl:hidden px-10" aria-label="Carousel indicator">
+        <div className="flex items-center">
+          <div className="relative flex-1 h-[3px] rounded-full bg-black/10 overflow-hidden">
+            <div
+              className="absolute left-0 top-0 h-full rounded-full bg-black/60 transition-all duration-300"
+              style={{ width: snaps.length ? `${((selected + 1) / snaps.length) * 100}%` : "0%" }}
+            />
+          </div>
         </div>
       </div>
     </div>

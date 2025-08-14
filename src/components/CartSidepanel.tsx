@@ -52,20 +52,22 @@ export default function CartSidepanel({
               {items.length === 0 ? (
                 <div className="text-center text-gray-500 py-12">Your cart is empty</div>
               ) : (
-                <ul className="space-y-3">
-                  {items.map((it) => (
-                    <li key={it.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={it.image} alt="" className="w-16 h-16 rounded object-cover" />
-                      <div className="min-w-0 flex-1">
-                        <div className="truncate font-medium text-sm">{it.title}</div>
-                        <div className="text-xs text-gray-500">{it.price.toFixed(2)} €</div>
-                        <div className="mt-2 text-xs text-gray-600">Qty: {it.quantity}</div>
-                      </div>
-                      <div className="text-sm font-semibold">{(it.price * it.quantity).toFixed(2)} €</div>
-                    </li>
-                  ))}
-                </ul>
+                <div className="py-3">
+                  <ul className="flex flex-col gap-y-3">
+                    {items.map((it) => (
+                      <li key={it.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={it.image} alt="" className="w-16 h-16 rounded object-cover" />
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate font-medium text-sm">{it.title}</div>
+                          <div className="text-xs text-gray-500">{it.price.toFixed(2)} €</div>
+                          <div className="mt-2 text-xs text-gray-600">Qty: {it.quantity}</div>
+                        </div>
+                        <div className="text-sm font-semibold">{(it.price * it.quantity).toFixed(2)} €</div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               )}
             </div>
 

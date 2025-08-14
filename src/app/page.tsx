@@ -191,7 +191,7 @@ export default function Home() {
 
 
       {/* Categories Section */}
-      <section className="w-full py-10 md:py-10">
+      <section className="w-full pt-10 pb-7 md:py-10">
         <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6 ">
 
           {/* Carousel with responsive items */}
@@ -204,11 +204,11 @@ export default function Home() {
           {/* Embla Hero Carousel Three Card Component*/}
           <div className="embla bg-transparent">
             <div className="embla__viewport overflow-hidden bg-transparent rounded-3xl" ref={emblaRef}>
-              <div className="embla__container flex touch-pan-y select-none gap-2 pxl-2 bg-transparent rounded-3xl">
+              <div className="embla__container flex touch-pan-y select-none gap-2 px-2 md:px-3 bg-transparent rounded-3xl">
                 {heroSlides.map((slide, idx) => (
                   <div
                     key={idx}
-                    className="embla__slide relative flex-[0_0_100%] min-w-0 rounded-3xl overflow-hidden"
+                    className="embla__slide relative flex-[0_0_105%] sm:flex-[0_0_102.5%] min-w-0 rounded-3xl overflow-hidden"
                   >
                     {/* Background image */}
                     <Image
@@ -251,7 +251,7 @@ export default function Home() {
                   key={i}
                   onClick={() => emblaApi && emblaApi.scrollTo(i)}
                   aria-label={`Go to slide ${i + 1}`}
-                  className={`h-[3px] md:h-[2px] rounded-full transition-all duration-300 ${
+                  className={`h-[3px] rounded-full transition-all duration-300 ${
                     selectedIndex === i ? "w-16 bg-gray-900/70" : "w-8 bg-gray-400/50"
                   }`}
                 />)
