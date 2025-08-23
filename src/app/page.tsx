@@ -5,6 +5,7 @@ import CategoriesCarousel from "@/components/CategoriesCarousel";
 import HeroCarousel from "@/components/HeroCarousel";
 import HeroSection from "@/components/HeroSection";
 import BrandsMarquee from "@/components/BrandsMarquee";
+import BikeCarousel from "@/components/BikeCarousel";
 
 const heroSlides = [
   {
@@ -49,6 +50,13 @@ export default function Home() {
           {/* Embla Hero Carousel Three Card Component*/}
           <HeroCarousel slides={heroSlides} />
         </div>
+      </section>
+
+      {/* Bike Carousel Section */}
+      <section className="w-full py-10">
+        <h2 className="text-2xl font-bold text-center mb-2">Our Picks 💚</h2>
+        <p className="text-gray-600 text-center mb-5">Discover our most popular options, ideal to ride around the island. </p>
+        <BikeCarousel />
       </section>
 
     </div>
