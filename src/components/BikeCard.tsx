@@ -55,17 +55,16 @@ export default function BikeCard({
           onClick={toggleFav}
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.94 }}
-          animate={{ scale: isFav ? [1, 1.18, 1] : 1 }}
           transition={spring}
-          className="absolute top-3 right-3 rounded-full backdrop-blur bg-white/90 border border-black/10 shadow-sm p-2"
+          className="absolute top-3 right-3 p-2"
         >
           {/* Provided heart SVG: outline when not clicked, green when clicked */}
           <motion.svg
-            whileHover={{ scale: 1.2 }}
+            whileHover={{ scale: 1.2, rotate: -10 }}
             transition={spring}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
-            className="w-6 h-6"
+            className="w-6 h-6 p-0.5"
             fill={isFav ? "#22c55e" : "transparent"}
           >
             <defs>
@@ -78,7 +77,6 @@ export default function BikeCard({
               d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z"
               stroke={isFav ? "#22c55e" : "#9ca3af"}
               strokeWidth={isFav ? 0 : 34}
-              animate={{ scale: isFav ? [1, 1.12, 1] : 1 }}
               transition={spring}
             />
           </motion.svg>
