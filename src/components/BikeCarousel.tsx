@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import BikeCard from "./BikeCard";
 
+
+//make bikes be the data retreieved from the Airtable database
 const bikes = [
   {
     id: "1",
     category: "Mountain Bike",
     name: "Name of Bike",
-    brand: "VelocityBikes",
+    brand: "Brand Name",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
     price: 4099,
@@ -19,7 +21,7 @@ const bikes = [
     id: "2",
     category: "Mountain Bike",
     name: "Name of Bike",
-    brand: "VelocityBikes",
+    brand: "Brand Name",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
     price: 4099,
@@ -29,7 +31,7 @@ const bikes = [
     id: "3",
     category: "Mountain Bike",
     name: "Name of Bike",
-    brand: "VelocityBikes",
+    brand: "Brand Name",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
     price: 4099,
@@ -39,7 +41,7 @@ const bikes = [
     id: "4",
     category: "Mountain Bike",
     name: "Name of Bike",
-    brand: "VelocityBikes",
+    brand: "Brand Name",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
     price: 4099,
@@ -49,7 +51,7 @@ const bikes = [
     id: "5",
     category: "Mountain Bike",
     name: "Name of Bike",
-    brand: "VelocityBikes",
+    brand: "Brand Name",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
     price: 4099,
@@ -59,7 +61,7 @@ const bikes = [
     id: "6",
     category: "Mountain Bike",
     name: "Name of Bike",
-    brand: "VelocityBikes",
+    brand: "Brand Name",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
     price: 4099,

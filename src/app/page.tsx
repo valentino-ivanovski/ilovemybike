@@ -54,9 +54,9 @@ export default function Home() {
 
       {/* Bike Carousel Section */}
       <section className="w-full py-10">
-        <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6 mb-5">
-          <h2 className="text-2xl font-bold text-center mb-2">Our Picks 💚</h2>
-          <p className="text-gray-600 text-center mb-5">Discover our most popular options, ideal to ride around the island. </p>
+        <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6 mb-3">
+          <h2 className="text-2xl font-bold text-center mb-2">Our Recommendations</h2>
+          <p className="text-gray-600 text-center">Discover our most popular options, ideal to ride around Kefalonia. </p>
         </div>
         <BikeCarousel />
       </section>

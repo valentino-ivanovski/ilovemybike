@@ -95,12 +95,12 @@ export default function BikeCard({
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
             className="w-6 h-6 p-0.5"
-            fill={isFav ? "#22c55e" : "transparent"}
+            fill={isFav ? "url(#goldHeart)" : "transparent"}
           >
             <defs>
-              <linearGradient id="heartGradient" x1="0%" y1="100%" x2="0%" y2="0%">
-                <stop offset="0%" stopColor="#E56F6F" />
-                <stop offset="100%" stopColor="#FAD814" />
+              <linearGradient id="goldHeart" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#E7C14F" />
+                <stop offset="100%" stopColor="#C9A227" />
               </linearGradient>
             </defs>
             <motion.path
@@ -121,7 +121,7 @@ export default function BikeCard({
         <p className="text-sm text-zinc-500 leading-relaxed line-clamp-2">{description}</p>
 
         <div className="mt-1 flex items-center justify-between">
-          <p className="font-extrabold text-2xl tracking-tight text-[#E11D48]">{price.toFixed(2)} €</p>
+          <p className="font-extrabold text-2xl tracking-tight pt-1.5 pl-1 text-green-500">{price.toFixed(0)}€</p>
 
           {/* Add to cart button */}
           <motion.button
@@ -129,7 +129,7 @@ export default function BikeCard({
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
             transition={spring}
-            className="inline-flex items-center justify-center rounded-full bg-black text-white text-sm font-medium px-6 py-3 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black/70"
+            className="flex-1 ml-4.5 inline-flex items-center justify-center rounded-full bg-black text-white text-sm font-medium px-6 py-3 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black/70"
           >
             Add to cart
           </motion.button>
