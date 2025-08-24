@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { EmblaOptionsType, AlignmentOptionType } from 'embla-carousel';
+import type { EmblaOptionsType } from 'embla-carousel';
 import useEmblaCarousel from "embla-carousel-react";
 import BikeCard from "./BikeCard";
 
@@ -83,7 +83,7 @@ export default function BikeCarousel() {
   }, []);
 
   const emblaOptions: EmblaOptionsType = useMemo(() => {
-    const align: AlignmentOptionType = isMobile ? 'center' : 'start';
+    const align = isMobile ? 'center' : 'start';
     return {
       align,
       loop: false,
