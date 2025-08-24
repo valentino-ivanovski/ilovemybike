@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import BikeCard from "./BikeCard";
 
@@ -70,11 +70,26 @@ const bikes = [
 ];
 
 export default function BikeCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "start",
-    loop: false,
-    slidesToScroll: 1,
-  });
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 639px)'); // Tailwind 'sm' breakpoint
+    const update = () => setIsMobile(mql.matches);
+    update();
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
+
+  const emblaOptions = useMemo(
+    () => ({
+      align: isMobile ? 'center' : 'start',
+      loop: false,
+      slidesToScroll: 1,
+    }),
+    [isMobile]
+  );
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions);
 
   const [api, setApi] = useState<any>(null);
   const [snaps, setSnaps] = useState<number[]>([]);
@@ -112,7 +127,7 @@ export default function BikeCarousel() {
   }, [api]);
 
   return (
-    <div className="relative w-full max-w-[1200px] mx-auto pt-4 pb-4 pl-4 md:px-6 md:pr-7.5">
+    <div className="relative w-full max-w-[1200px] mx-auto pt-4 pb-4 pl-4 pr-4 md:px-6 md:pr-7.5">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex gap-6 py-2 pl-2">
           {bikes.map((bike, index) => (
