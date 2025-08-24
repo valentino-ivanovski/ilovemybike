@@ -27,8 +27,8 @@ import React, { useState, useEffect } from "react";
 import { FaHeart, FaShoppingCart, FaSearch, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import "flag-icons/css/flag-icons.min.css";
 import { motion, AnimatePresence } from "framer-motion";
-import FavoritesSidepanel, { FavoriteItem } from "./FavoritesSidepanel";
-import CartSidepanel, { CartItem } from "./CartSidepanel";  //something to do with this why the numbers are not kept in memory i think
+import FavoritesSidepanel from "./FavoritesSidepanel";
+import CartSidepanel from "./CartSidepanel";  //something to do with this why the numbers are not kept in memory i think
 import { useCart } from "@/contexts/CartContext";
 
 
