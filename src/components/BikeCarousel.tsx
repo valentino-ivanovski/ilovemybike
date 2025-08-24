@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { EmblaOptionsType, AlignmentOptionType } from 'embla-carousel';
 import useEmblaCarousel from "embla-carousel-react";
 import BikeCard from "./BikeCard";
 
@@ -70,11 +71,27 @@ const bikes = [
 ];
 
 export default function BikeCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: "start",
-    loop: false,
-    slidesToScroll: 1,
-  });
+  // Responsive: center slides on mobile, keep start on larger screens
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia('(max-width: 639px)'); // Tailwind sm breakpoint
+    const update = () => setIsMobile(mql.matches);
+    update();
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
+
+  const emblaOptions: EmblaOptionsType = useMemo(() => {
+    const align: AlignmentOptionType = isMobile ? 'center' : 'start';
+    return {
+      align,
+      loop: false,
+      slidesToScroll: 1,
+    };
+  }, [isMobile]);
+
+  const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions);
 
   const [api, setApi] = useState<any>(null);
   const [snaps, setSnaps] = useState<number[]>([]);
