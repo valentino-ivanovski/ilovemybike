@@ -124,13 +124,18 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
-  const [storedState, setStoredState] = useLocalStorage<CartState>('cart-state', initialState);
+  const [/*storedState*/, setStoredState] = useLocalStorage<CartState>('cart-state', initialState);
 
-  // Load from localStorage on mount
   useEffect(() => {
-    if (storedState && (storedState.items.length > 0 || storedState.favorites.length > 0)) {
-      dispatch({ type: 'LOAD_STATE', payload: storedState });
-    }
+    try {
+      const raw = window.localStorage.getItem('cart-state');
+      if (raw) {
+        const parsed = JSON.parse(raw) as CartState;
+        if (parsed && typeof parsed === 'object') {
+          dispatch({ type: 'LOAD_STATE', payload: parsed });
+        }
+      }
+    } catch (_) {}
   }, []);
 
   // Save to localStorage whenever state changes
