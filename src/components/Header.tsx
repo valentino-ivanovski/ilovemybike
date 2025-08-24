@@ -375,7 +375,6 @@ const Header: React.FC = () => {
               <div className="p-4 border-b">
                 <div className="flex items-stretch gap-3">
                   <button
-                    className="flex-1 flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:shadow-sm active:scale-95 transition"
                     className="relative flex-1 flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:shadow-sm active:scale-95 transition"
                     onClick={() => setFavOpen(true)}
                   >
