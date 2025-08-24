@@ -294,24 +294,6 @@ const Header: React.FC = () => {
           </div>
         </div>
       </motion.div>
-              onClick={() => { setFavOpen(true); setLangOpen(false); }}
-              className="p-2 rounded-full hover:bg-gray-100 active:scale-95 transition"
-            >
-              <FaHeart className="text-yellow-500 text-xl" />
-            </button>
-
-            {/* Cart (sidepanel) */}
-            <button
-              aria-label="Open cart"
-              onClick={() => { setCartOpen(true); setFavOpen(false); setLangOpen(false); }}
-              className="p-2 rounded-full hover:bg-gray-100 active:scale-95 transition"
-            >
-              <FaShoppingCart className="text-gray-700 text-xl" />
-            </button>
-          </div>
-        </div>
-      </motion.div>
-
       {/* =====================================================================
           Mobile Drawer (off-canvas right)
           Contains: inline logo, search, quick actions, language toggles, nav
