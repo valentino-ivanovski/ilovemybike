@@ -129,13 +129,13 @@ export default function BikeCarousel() {
   }, [api]);
 
   return (
-    <div className="relative w-full max-w-[1200px] mx-auto pt-4 pb-4 pl-4 pr-4 md:px-6 md:pr-7.5">
+    <div className="relative w-full max-w-[1200px] mx-auto pt-4 pb-4 pl-0 md:px-6 md:pr-7.5">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex gap-6 py-2 pl-2">
           {bikes.map((bike, index) => (
             <div
               key={index}
-              className="min-w-[280px] sm:min-w-[320px] max-w-[340px] flex-shrink-0"
+              className={`min-w-[280px] sm:min-w-[320px] max-w-[340px] flex-shrink-0 ${index === 0 ? "ml-3 sm:ml-0" : ""} ${index === bikes.length - 1 ? "mr-4 sm:mr-0" : ""}`}
             >
               <BikeCard {...bike} />
             </div>

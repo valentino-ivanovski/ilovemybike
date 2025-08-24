@@ -121,7 +121,7 @@ export default function BikeCard({
         <p className="text-sm text-zinc-500 leading-relaxed line-clamp-2">{description}</p>
 
         <div className="mt-1 flex items-center justify-between">
-          <p className="font-extrabold text-2xl tracking-tight pt-1.5 pl-1 text-green-500">{price.toFixed(0)}€</p>
+          <p className="font-extrabold text-2xl tracking-tight pt-1 pl-1 text-green-500">{price.toFixed(0)}€</p>
 
           {/* Add to cart button */}
           <motion.button
