@@ -6,51 +6,63 @@ import BikeCard from "./BikeCard";
 
 const bikes = [
   {
+    id: "1",
     category: "Mountain Bike",
     name: "Name of Bike",
+    brand: "VelocityBikes",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
-    price: "4,099 €",
+    price: 4099,
     image: "/images/1.webp",
   },
   {
+    id: "2",
     category: "Mountain Bike",
     name: "Name of Bike",
+    brand: "VelocityBikes",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
-    price: "4,099 €",
+    price: 4099,
     image: "/images/1.webp",
   },
   {
+    id: "3",
     category: "Mountain Bike",
     name: "Name of Bike",
+    brand: "VelocityBikes",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
-    price: "4,099 €",
+    price: 4099,
     image: "/images/1.webp",
   },
   {
+    id: "4",
     category: "Mountain Bike",
     name: "Name of Bike",
+    brand: "VelocityBikes",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
-    price: "4,099 €",
+    price: 4099,
     image: "/images/1.webp",
   },
   {
+    id: "5",
     category: "Mountain Bike",
     name: "Name of Bike",
+    brand: "VelocityBikes",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
-    price: "4,099 €",
+    price: 4099,
     image: "/images/1.webp",
   },
   {
+    id: "6",
     category: "Mountain Bike",
     name: "Name of Bike",
+    brand: "VelocityBikes",
     description:
       "Non ad ut fugiat aute fugiat velit aliqua adipisicing exercitation nostrud ea.",
-    price: "4,099 €",
+    price: 4099,
     image: "/images/1.webp",
   },
 ];

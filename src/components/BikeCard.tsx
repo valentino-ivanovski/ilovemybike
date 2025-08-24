@@ -1,35 +1,65 @@
 "use client";
 import { useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useCart } from "@/contexts/CartContext";
 
 interface BikeCardProps {
+  id: string;
   category: string;
   name: string;
+  brand?: string;
   description: string;
-  price: string;
+  price: number;
   image: string;
-  onAddToCart?: () => void;
-  onToggleFavorite?: (fav: boolean) => void;
 }
 
 const spring = { type: "spring", stiffness: 300, damping: 15 } as const;
 
 export default function BikeCard({
+  id,
   category,
   name,
+  brand,
   description,
   price,
   image,
-  onAddToCart,
-  onToggleFavorite,
 }: BikeCardProps) {
+  const { addToCart, addToFavorites, removeFromFavorites, isInFavorites } = useCart();
   const [isFav, setIsFav] = useState(false);
 
+  // Check if item is in favorites on mount and when favorites change
+  useEffect(() => {
+    setIsFav(isInFavorites(id));
+  }, [id, isInFavorites]);
+
   const toggleFav = () => {
-    const next = !isFav;
-    setIsFav(next);
-    onToggleFavorite?.(next);
+    if (isFav) {
+      removeFromFavorites(id);
+    } else {
+      addToFavorites({
+        id,
+        name,
+        brand,
+        price,
+        image,
+        category,
+        description,
+      });
+    }
+  };
+
+  const handleAddToCart = () => {
+    addToCart({
+      id,
+      name,
+      brand,
+      price,
+      image,
+      category,
+      description,
+    });
   };
 
   return (
@@ -87,14 +117,15 @@ export default function BikeCard({
       <div className="px-5 pb-5 pt-4 flex flex-col gap-2">
         <p className="text-xs tracking-wide text-gray-500">{category}</p>
         <h3 className="font-semibold text-xl leading-tight text-zinc-900">{name}</h3>
+        {brand && <p className="text-sm text-zinc-400">{brand}</p>}
         <p className="text-sm text-zinc-500 leading-relaxed line-clamp-2">{description}</p>
 
         <div className="mt-1 flex items-center justify-between">
-          <p className="font-extrabold text-2xl tracking-tight text-[#E11D48]">{price}</p>
+          <p className="font-extrabold text-2xl tracking-tight text-[#E11D48]">{price.toFixed(2)} €</p>
 
           {/* Add to cart button */}
           <motion.button
-            onClick={onAddToCart}
+            onClick={handleAddToCart}
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
             transition={spring}

@@ -29,6 +29,7 @@ import "flag-icons/css/flag-icons.min.css";
 import { motion, AnimatePresence } from "framer-motion";
 import FavoritesSidepanel, { FavoriteItem } from "./FavoritesSidepanel";
 import CartSidepanel, { CartItem } from "./CartSidepanel";
+import { useCart } from "@/contexts/CartContext";
 
 
 // -----------------------------------------------------------------------------
@@ -44,6 +45,7 @@ import CartSidepanel, { CartItem } from "./CartSidepanel";
 const Header: React.FC = () => {
   // --- UI State ---------------------------------------------------------------
   // Drawer visibility, language selection, and panel toggles
+  const { state, getTotalItems } = useCart();
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [lang, setLang] = useState<"en" | "el">("en");
   const [isLangOpen, setLangOpen] = useState(false);
@@ -59,11 +61,6 @@ const Header: React.FC = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // --- Demo Data (replace with real state/context) ----------------------------
-  // In production, lift these into a store/context (e.g., Zustand/Redux) or
-  // fetch from your backend. They are here only so the UI can be previewed.
-  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   return (
     <header className="fixed top-0 left-0 w-full z-50">
       {/* =====================================================================
@@ -270,6 +267,33 @@ const Header: React.FC = () => {
             {/* Favorites (sidepanel) */}
             <button
               aria-label="Open favorites"
+              className="relative p-2 rounded-full hover:bg-gray-100 active:scale-95 transition"
+              onClick={() => { setFavOpen(true); setLangOpen(false); }}
+            >
+              <FaHeart className="text-yellow-500 text-xl" />
+              {state.favorites.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {state.favorites.length}
+                </span>
+              )}
+            </button>
+
+            {/* Cart (sidepanel) */}
+            <button
+              aria-label="Open cart"
+              className="relative p-2 rounded-full hover:bg-gray-100 active:scale-95 transition"
+              onClick={() => { setCartOpen(true); setFavOpen(false); setLangOpen(false); }}
+            >
+              <FaShoppingCart className="text-gray-700 text-xl" />
+              {getTotalItems() > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {getTotalItems()}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </motion.div>
               onClick={() => { setFavOpen(true); setLangOpen(false); }}
               className="p-2 rounded-full hover:bg-gray-100 active:scale-95 transition"
             >
@@ -352,16 +376,27 @@ const Header: React.FC = () => {
                 <div className="flex items-stretch gap-3">
                   <button
                     className="flex-1 flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:shadow-sm active:scale-95 transition"
+                    className="relative flex-1 flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:shadow-sm active:scale-95 transition"
                     onClick={() => setFavOpen(true)}
                   >
                     <FaHeart className="text-yellow-500 text-xl" />
+                    {state.favorites.length > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        {state.favorites.length}
+                      </span>
+                    )}
                     <span className="text-xs text-gray-700">Favorites</span>
                   </button>
                   <button
-                    className="flex-1 flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:shadow-sm active:scale-95 transition"
+                    className="relative flex-1 flex flex-col items-center justify-center gap-2 p-3 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:shadow-sm active:scale-95 transition"
                     onClick={() => setCartOpen(true)}
                   >
                     <FaShoppingCart className="text-gray-700 text-xl" />
+                    {getTotalItems() > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                        {getTotalItems()}
+                      </span>
+                    )}
                     <span className="text-xs text-gray-700">Cart</span>
                   </button>
                 </div>
@@ -416,8 +451,8 @@ const Header: React.FC = () => {
       {/* =====================================================================
           Sidepanels Mount Points (outside of drawer)
          ===================================================================== */}
-      <FavoritesSidepanel isOpen={isFavOpen} onClose={() => setFavOpen(false)} items={favorites} />
-      <CartSidepanel isOpen={isCartOpen} onClose={() => setCartOpen(false)} items={cartItems} />
+      <FavoritesSidepanel isOpen={isFavOpen} onClose={() => setFavOpen(false)} />
+      <CartSidepanel isOpen={isCartOpen} onClose={() => setCartOpen(false)} />
     </header>
   );
 };

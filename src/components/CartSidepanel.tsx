@@ -1,25 +1,20 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
-import { FaTimes } from "react-icons/fa";
-
-export interface CartItem {
-  id: string;
-  title: string;
-  image: string;
-  price: number;
-  quantity: number;
-}
+import { FaTimes, FaPlus, FaMinus } from "react-icons/fa";
+import { useCart } from "@/contexts/CartContext";
+import Image from "next/image";
 
 export default function CartSidepanel({
   isOpen,
   onClose,
-  items,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  items: CartItem[];
 }) {
-  const total = items.reduce((acc, it) => acc + it.price * it.quantity, 0);
+  const { state, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCart();
+  const { items } = state;
+  const total = getTotalPrice();
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -56,14 +51,45 @@ export default function CartSidepanel({
                   <ul className="flex flex-col gap-y-3">
                     {items.map((it) => (
                       <li key={it.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={it.image} alt="" className="w-16 h-16 rounded object-cover" />
-                        <div className="min-w-0 flex-1">
-                          <div className="truncate font-medium text-sm">{it.title}</div>
-                          <div className="text-xs text-gray-500">{it.price.toFixed(2)} €</div>
-                          <div className="mt-2 text-xs text-gray-600">Qty: {it.quantity}</div>
+                        <div className="relative w-16 h-16 rounded overflow-hidden">
+                          <Image
+                            src={it.image}
+                            alt={it.name}
+                            fill
+                            className="object-cover"
+                          />
                         </div>
-                        <div className="text-sm font-semibold">{(it.price * it.quantity).toFixed(2)} €</div>
+                        <div className="min-w-0 flex-1">
+                          <div className="truncate font-medium text-sm">{it.name}</div>
+                          {it.brand && (
+                            <div className="text-xs text-gray-400">{it.brand}</div>
+                          )}
+                          <div className="text-xs text-gray-500">{it.price.toFixed(2)} €</div>
+                          <div className="mt-2 flex items-center gap-2">
+                            <button
+                              onClick={() => updateQuantity(it.id, it.quantity - 1)}
+                              className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition"
+                            >
+                              <FaMinus className="text-xs" />
+                            </button>
+                            <span className="text-xs font-medium w-8 text-center">{it.quantity}</span>
+                            <button
+                              onClick={() => updateQuantity(it.id, it.quantity + 1)}
+                              className="w-6 h-6 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition"
+                            >
+                              <FaPlus className="text-xs" />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <div className="text-sm font-semibold">{(it.price * it.quantity).toFixed(2)} €</div>
+                          <button
+                            onClick={() => removeFromCart(it.id)}
+                            className="text-xs px-2 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50 transition"
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </li>
                     ))}
                   </ul>
@@ -76,9 +102,19 @@ export default function CartSidepanel({
                 <span className="font-medium">Total</span>
                 <span className="font-semibold">{total.toFixed(2)} €</span>
               </div>
-              <button className="w-full py-2 rounded-md bg-black text-white hover:opacity-90 active:scale-[.99] transition">
-                Checkout
-              </button>
+              <div className="space-y-2">
+                <button className="w-full py-2 rounded-md bg-black text-white hover:opacity-90 active:scale-[.99] transition">
+                  Checkout
+                </button>
+                {items.length > 0 && (
+                  <button 
+                    onClick={clearCart}
+                    className="w-full py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 active:scale-[.99] transition"
+                  >
+                    Clear Cart
+                  </button>
+                )}
+              </div>
             </div>
           </motion.aside>
         </>

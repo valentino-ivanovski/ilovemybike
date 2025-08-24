@@ -2,23 +2,19 @@
 "use client";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
-
-export interface FavoriteItem {
-  id: string;
-  title: string;
-  image: string;
-  price?: number;
-}
+import { useCart } from "@/contexts/CartContext";
+import Image from "next/image";
 
 export default function FavoritesSidepanel({
   isOpen,
   onClose,
-  items,
 }: {
   isOpen: boolean;
   onClose: () => void;
-  items: FavoriteItem[];
 }) {
+  const { state, removeFromFavorites, addToCart } = useCart();
+  const { favorites } = state;
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -48,21 +44,41 @@ export default function FavoritesSidepanel({
             </div>
 
             <div className="flex-1 overflow-y-auto p-4">
-              {items.length === 0 ? (
+              {favorites.length === 0 ? (
                 <div className="text-center text-gray-500 py-12">No favorites yet</div>
               ) : (
                 <ul className="space-y-3">
-                  {items.map((it) => (
-                    <li key={it.id} className="flex items-center gap-3 p-3 border rounded-lg">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={it.image} alt="" className="w-16 h-16 rounded object-cover" />
-                      <div className="min-w-0 flex-1">
-                        <div className="truncate font-medium text-sm">{it.title}</div>
-                        {typeof it.price === "number" && (
-                          <div className="text-xs text-gray-500">{it.price.toFixed(2)} €</div>
-                        )}
+                  {favorites.map((item) => (
+                    <li key={item.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                      <div className="relative w-16 h-16 rounded overflow-hidden">
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                        />
                       </div>
-                      <button className="text-xs px-2 py-1 rounded border hover:bg-gray-100">View</button>
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate font-medium text-sm">{item.name}</div>
+                        {item.brand && (
+                          <div className="text-xs text-gray-400">{item.brand}</div>
+                        )}
+                        <div className="text-xs text-gray-500">{item.price.toFixed(2)} €</div>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <button 
+                          onClick={() => addToCart(item)}
+                          className="text-xs px-3 py-1 rounded bg-black text-white hover:bg-gray-800 transition"
+                        >
+                          Add to Cart
+                        </button>
+                        <button 
+                          onClick={() => removeFromFavorites(item.id)}
+                          className="text-xs px-3 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50 transition"
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>
