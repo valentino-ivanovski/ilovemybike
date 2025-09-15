@@ -165,7 +165,7 @@ const Header: React.FC = () => {
           - Right: search + favorites + cart
          ===================================================================== */}
       <motion.div
-        className="hidden md:flex w-full justify-center pt-4"
+        className="hidden lg:flex w-full justify-center pt-4"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 150, damping: 10, delay: 1.5 }}
