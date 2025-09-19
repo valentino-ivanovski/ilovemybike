@@ -8,21 +8,33 @@ import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState } from "react";
 import HeroCarouselDots from "@/components/HeroCarouselDots";
 
-export type Slide = {
-  heading: string;
-  subtext: string;
-  cta: string;
-};
-
 export default function HeroCarousel({
-  slides,
   itemVariants,
-  imageSrc = "/images/3.webp?v2",
 }: {
-  slides: Slide[];
   itemVariants?: Variants;
-  imageSrc?: string;
 }) {
+  
+  const heroSlides = [
+    {
+      heading: "Explore the Freedom of the Open Road",
+      subtext: "Join us on a journey where every pedal stroke brings you closer to nature and adventure.",
+      cta: "Start Riding",
+      image: "/images/3.webp",
+    },
+    {
+      heading: "Ride with Confidence and Style",
+      subtext: "Discover our range of bikes designed for comfort, performance, and durability.",
+      cta: "Shop Now",
+      image: "/images/3.webp",
+    },
+    {
+      heading: "Connect with Fellow Cyclists",
+      subtext: "Be part of a vibrant community that shares your passion for biking.",
+      cta: "Join Community",
+      image: "/images/3.webp",
+    },
+  ];
+
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, align: "start" },
     [Autoplay({ delay: 4000, stopOnMouseEnter: true, stopOnInteraction: false })]
@@ -44,15 +56,15 @@ export default function HeroCarousel({
     <div className="embla bg-transparent">
       <div className="embla__viewport overflow-hidden bg-transparent rounded-3xl" ref={emblaRef}>
         <div className="embla__container flex touch-pan-y select-none gap-2 px-2 md:px-3 bg-transparent rounded-3xl">
-          {slides.map((slide, idx) => (
+          {heroSlides.map((slide, idx) => (
             <div
               key={idx}
               className="embla__slide relative flex-[0_0_105%] sm:flex-[0_0_102.5%] min-w-0 rounded-3xl overflow-hidden"
             >
               {/* Background image */}
               <Image
-                src={imageSrc}
-                alt="Cycling road background"
+                src={slide.image}
+                alt={slide.heading}
                 fill
                 priority={idx === 0}
                 className="object-cover rounded-3xl bg-transparent"
@@ -86,7 +98,7 @@ export default function HeroCarousel({
 
       {/* Dots indicator */}
       <HeroCarouselDots
-        count={slides.length}
+        count={heroSlides.length}
         selectedIndex={selectedIndex}
         onSelect={(i) => emblaApi && emblaApi.scrollTo(i)}
       />

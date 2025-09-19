@@ -6,24 +6,7 @@ import HeroCarousel from "@/components/HeroCarousel";
 import HeroSection from "@/components/HeroSection";
 import BrandsMarquee from "@/components/BrandsMarquee";
 import BikeCarousel from "@/components/BikeCarousel";
-
-const heroSlides = [
-  {
-    heading: "Some placeholder text goes here.",
-    subtext: "Short supporting copy for slide one — swap with real content later.",
-    cta: "Shop Now",
-  },
-  {
-    heading: "Another placeholder headline.",
-    subtext: "Second slide copy. Keep it brief so it looks clean on the image.",
-    cta: "Shop Now",
-  },
-  {
-    heading: "Final placeholder headline.",
-    subtext: "Third slide copy to demo autoplay between slides.",
-    cta: "Shop Now",
-  },
-];
+import Parts from "@/components/Parts";
 
 export default function Home() {
   return (
@@ -48,7 +31,7 @@ export default function Home() {
       <section className="w-full pb-5 md:px-7.5 px-6 bg-transparent rounded-3xl max-w-[1200px]">
         <div className="mx-auto w-full max-w-[1200px] bg-transparent rounded-3xl">
           {/* Embla Hero Carousel Three Card Component*/}
-          <HeroCarousel slides={heroSlides} />
+          <HeroCarousel />
         </div>
       </section>
 
@@ -60,6 +43,15 @@ export default function Home() {
         </div>
         <BikeCarousel />
       </section>
+
+      <section className="w-full pb-5 md:px-7.5 px-6 bg-transparent rounded-3xl max-w-[1200px]">
+        <div className="mx-auto w-full max-w-[1200px] bg-transparent rounded-3xl">
+          {/* Embla Hero Carousel Three Card Component*/}
+          <Parts />
+        </div>
+      </section>
+
+
 
     </div>
   );
