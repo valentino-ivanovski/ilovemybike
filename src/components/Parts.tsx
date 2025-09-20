@@ -32,7 +32,7 @@ const Parts: React.FC = () => {
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                   className="btn mt-6  sm:w-auto sm:max-w-fit"
                 >
-                    Shop Parts
+                    Order Parts
                 </motion.button>
               </div>
             </div>
