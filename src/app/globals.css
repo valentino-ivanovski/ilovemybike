@@ -120,3 +120,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* globals.css or tailwind.css */
+.btn {
+  @apply rounded-full px-[23px]  py-[8px]  text-[15px] cursor-pointer 
+         bg-gradient-to-tr from-[#BDBDBD] to-white 
+         text-black/90;
+}

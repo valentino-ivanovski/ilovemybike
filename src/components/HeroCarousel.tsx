@@ -18,7 +18,7 @@ export default function HeroCarousel({
     {
       heading: "Explore the Freedom of the Open Road",
       subtext: "Join us on a journey where every pedal stroke brings you closer to nature and adventure.",
-      cta: "Start Riding",
+      cta: "Shop Now",
       image: "/images/3.webp",
     },
     {
@@ -30,7 +30,7 @@ export default function HeroCarousel({
     {
       heading: "Connect with Fellow Cyclists",
       subtext: "Be part of a vibrant community that shares your passion for biking.",
-      cta: "Join Community",
+      cta: "Shop Now",
       image: "/images/3.webp",
     },
   ];
@@ -74,8 +74,8 @@ export default function HeroCarousel({
               <div className="absolute inset-0 bg-transparent" />
 
               {/* Slide content */}
-              <div className="relative z-10 h-full flex flex-col justify-center p-6 sm:p-10 md:p-14 max-w-xl text-white">
-                <h3 className="text-3xl md:text-5xl font-bold leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)]">
+              <div className="relative z-10 h-full flex flex-col justify-center p-6 sm:p-10 md:p-17 text-white">
+                <h3 className="text-3xl md:text-4xl font-bold leading-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)]">
                   {slide.heading}
                 </h3>
                 <p className="mt-4 text-base md:text-lg text-white/90 max-w-prose">
@@ -86,7 +86,7 @@ export default function HeroCarousel({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  className="mt-6 rounded-full px-4 py-2 cursor-pointer bg-gradient-to-tr from-[#BDBDBD] text-black/90 to-white w-full sm:w-auto sm:max-w-fit"
+                  className="mt-6 btn max-w-[120px]"
                 >
                   {slide.cta}
                 </motion.button>

@@ -129,7 +129,7 @@ export default function BikeCard({
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
             transition={spring}
-            className="flex-1 ml-4.5 inline-flex items-center justify-center rounded-full bg-black text-white text-sm font-medium px-6 py-3 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black/70"
+            className="flex-1 ml-4.5 inline-flex items-center justify-center rounded-full bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] text-white text-sm font-medium px-6 py-3 shadow-sm"
           >
             Add to cart
           </motion.button>
