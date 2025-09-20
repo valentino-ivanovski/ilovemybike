@@ -9,6 +9,7 @@ import BikeCarousel from "@/components/BikeCarousel";
 import Parts from "@/components/Parts";
 import AccessoriesCarousel from "@/components/AccessoriesCarousel";
 import HowToOrder from "@/components/HowToOrder";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   return (
@@ -64,6 +65,9 @@ export default function Home() {
 
       {/* How to Order Section */}
       <HowToOrder />
+
+      {/* Footer */}
+      <Footer />
 
     </div>
   );
