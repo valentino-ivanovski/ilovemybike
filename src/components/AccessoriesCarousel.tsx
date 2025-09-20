@@ -11,37 +11,37 @@ const accessories = [
     id: "acc-1",
     name: "Premium Bike Helmet",
     price: 89,
-    image: "/images/1.webp",
+    image: "/images/5.jpg",
   },
   {
     id: "acc-2",
     name: "LED Light Set",
     price: 45,
-    image: "/images/1.webp",
+    image: "/images/5.jpg",
   },
   {
     id: "acc-3",
     name: "Water Bottle Holder",
     price: 25,
-    image: "/images/1.webp",
+    image: "/images/5.jpg",
   },
   {
     id: "acc-4",
     name: "Bike Lock",
     price: 65,
-    image: "/images/1.webp",
+    image: "/images/5.jpg",
   },
   {
     id: "acc-5",
     name: "Cycling Gloves",
     price: 35,
-    image: "/images/1.webp",
+    image: "/images/5.jpg",
   },
   {
     id: "acc-6",
     name: "Bike Computer",
     price: 120,
-    image: "/images/1.webp",
+    image: "/images/5.jpg",
   },
 ];
 
@@ -159,7 +159,7 @@ export default function AccessoriesCarousel() {
       <div className="flex justify-center mt-6">
         <a
           href="/accessories"
-          className="text-gray-600 hover:text-black font-medium"
+          className="text-gray-600 hover:text-black hover:underline font-medium"
         >
           Shop Accessories →
         </a>

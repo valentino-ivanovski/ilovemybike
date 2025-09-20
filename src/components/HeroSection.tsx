@@ -70,15 +70,16 @@ export default function HeroSection() {
           variants={container}
           className="flex flex-col gap-1 items-start justify-center w-full pl-10 bg-blue-0 mr-3 md:mr-0"
         >
-          <motion.div variants={item} className="ILOVEMYBIKE flex flex-row gap-2 mt-25 md:mt-8 items-center justify-center">
-            <h1 className="hidden md:block text-6xl font-bold bg-gradient-to-t from-[#A9A9A9] to-black/90 text-transparent bg-clip-text">I </h1>
+          <motion.div variants={item} className="ILOVEMYBIKE flex flex-row gap-2 mt-25 md:mt-8 items-center justify-center select-none">
+            <h1 className="hidden md:block text-6xl font-bold bg-gradient-to-t from-[#A9A9A9] to-black/90 text-transparent bg-clip-text pointer-events-none">I </h1>
 
             <motion.svg
               whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 1 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
-              className="hidden md:inline-block mx-2 w-[3.3em] h-[3.3em] align-middle"
+              className="hidden md:inline-block mx-2 w-[3.3em] h-[3.3em] align-middle cursor-pointer"
               fill="url(#heartGradient)"
             >
               <defs>
@@ -90,7 +91,7 @@ export default function HeroSection() {
               <path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z" />
             </motion.svg>
 
-            <h1 className="hidden md:block text-5xl md:text-6xl font-bold bg-gradient-to-t from-[#A9A9A9] to-black/90 text-transparent bg-clip-text"> MY BIKE</h1>
+            <h1 className="hidden md:block text-5xl md:text-6xl font-bold bg-gradient-to-t from-[#A9A9A9] to-black/90 text-transparent bg-clip-text pointer-events-none"> MY BIKE</h1>
           </motion.div>
 
           <motion.h2 variants={item} className="text-3xl font-semibold text-black mt-4">

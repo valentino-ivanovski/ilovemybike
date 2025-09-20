@@ -1,8 +1,11 @@
 "use client";
-
+import { motion } from "framer-motion";
 import { ShoppingCart, MessageSquare, FileText, Truck } from "lucide-react";
 
 export default function HowToOrder() {
+
+  const spring = { type: "spring", stiffness: 300, damping: 15 } as const;
+
   const steps = [
     {
       icon: ShoppingCart,
@@ -27,7 +30,7 @@ export default function HowToOrder() {
   ];
 
   return (
-    <section className="w-full py-10">
+    <section className="w-full">
       <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6">
         <div className="bg-white rounded-3xl border border-black/5 shadow-md p-8 md:p-12">
           <h2 className="text-2xl font-bold text-center mb-8 text-gray-900">How to Order</h2>
@@ -36,10 +39,7 @@ export default function HowToOrder() {
             {steps.map((step, index) => {
               const IconComponent = step.icon;
               return (
-                <div key={index} className="flex flex-col items-center text-center">
-                  <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center mb-3 text-sm font-bold">
-                    {index + 1}
-                  </div>
+                <div key={index} className="flex flex-col items-center text-center hover:scale-105 transition-transform duration-300">
                   <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
                     <IconComponent className="w-8 h-8 text-gray-700" />
                   </div>
@@ -50,12 +50,17 @@ export default function HowToOrder() {
             })}
           </div>
           
-          <div className="flex justify-center mt-8">
-            <button className="bg-black text-white px-8 py-3 rounded-full font-medium hover:bg-gray-800 transition-colors">
-              Shop Now
-            </button>
-          </div>
         </div>
+          <div className="flex justify-center mt-8">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="rounded-full px-[23px] py-[8px] cursor-pointer bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] text-white"
+            >
+              Shop Now
+            </motion.button>
+          </div>
       </div>
     </section>
   );

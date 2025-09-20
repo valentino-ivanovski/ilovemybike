@@ -184,7 +184,7 @@ export default function BikeCarousel() {
       <div className="flex justify-center mt-6">
         <a
           href="/shop"
-          className="text-gray-600 hover:text-black font-medium"
+          className="text-gray-600 hover:text-black hover:underline font-medium"
         >
           Shop Bikes →
         </a>

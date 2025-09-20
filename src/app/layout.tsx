@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "I ❤️ MY BIKE",
+  title: "I 💚 MY BIKE",
   description: "Your bike site",
 };
 

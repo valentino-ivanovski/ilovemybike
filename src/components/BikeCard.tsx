@@ -121,7 +121,7 @@ export default function BikeCard({
         <p className="text-sm text-zinc-500 leading-relaxed line-clamp-2">{description}</p>
 
         <div className="mt-1 flex items-center justify-between">
-          <p className="font-extrabold text-2xl tracking-tight pt-1 pl-1 text-green-500">{price.toFixed(0)}€</p>
+          <p className="font-bold text-2xl tracking-tight pt-1 pl-1 text-green-500">{price.toFixed(0)}€</p>
 
           {/* Add to cart button */}
           <motion.button
@@ -129,7 +129,7 @@ export default function BikeCard({
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
             transition={spring}
-            className="flex-1 ml-4.5 inline-flex items-center justify-center rounded-full bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] text-white text-sm font-medium px-6 py-3 shadow-sm"
+            className="flex-1 ml-4.5 inline-flex items-center justify-center rounded-full bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] cursor-pointer text-white text-sm font-medium px-6 py-3 shadow-sm"
           >
             Add to cart
           </motion.button>
