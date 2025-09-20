@@ -7,6 +7,8 @@ import HeroSection from "@/components/HeroSection";
 import BrandsMarquee from "@/components/BrandsMarquee";
 import BikeCarousel from "@/components/BikeCarousel";
 import Parts from "@/components/Parts";
+import AccessoriesCarousel from "@/components/AccessoriesCarousel";
+import HowToOrder from "@/components/HowToOrder";
 
 export default function Home() {
   return (
@@ -51,7 +53,17 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Featured Bike Accessories Section */}
+      <section className="w-full py-10">
+        <div className="mx-auto w-full max-w-[1200px] px-4 md:px-6 mb-3">
+          <h2 className="text-2xl font-bold text-center mb-2">Featured Bike Accessories</h2>
+          <p className="text-gray-600 text-center">Essential accessories to enhance your cycling experience.</p>
+        </div>
+        <AccessoriesCarousel />
+      </section>
 
+      {/* How to Order Section */}
+      <HowToOrder />
 
     </div>
   );
