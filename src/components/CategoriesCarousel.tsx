@@ -44,7 +44,7 @@ export default function CategoriesCarousel() {
           {categories.map((cat) => (
             <CarouselItem
               key={cat.key}
-              className="pl-1.5 pr-1.5 basis-[49.7%] sm:basis-[40%] md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+              className="pl-2 pr-1.5 basis-[49.7%] sm:basis-[40%] md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
             >
               <div className="group relative overflow-hidden rounded-2xl border border-black/5 shadow-sm">
                 <div className="relative h-[200px] sm:h-[230px] md:h-[260px] lg:h-[280px]">

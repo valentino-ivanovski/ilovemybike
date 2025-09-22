@@ -59,12 +59,12 @@ export default function AccessoryCard({
       initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={spring}
-      className="group flex flex-col bg-white rounded-3xl border border-black/5 shadow-md overflow-hidden"
+      className="group flex flex-col w-64 sm:w-[261px] bg-white rounded-3xl border border-black/5 shadow-md overflow-hidden"
     >
       {/* Image */}
-      <div className="relative w-full h-48 bg-white to-zinc-50">
+      <div className="relative w-full h-64 bg-white to-zinc-50">
         <motion.div
-          className="absolute inset-0 p-2 mt-4"
+          className="absolute inset-0 p-2 mt-4 border-b border-black/10"
           initial={{ scale: 1 }}
           animate={{ scale: 1.05 }}
           transition={spring}
@@ -74,7 +74,7 @@ export default function AccessoryCard({
             alt={name}
             fill
             priority={false}
-            className="object-contain"
+            className="object-contain sm:object-scale-down"
           />
         </motion.div>
         <motion.button
@@ -111,23 +111,29 @@ export default function AccessoryCard({
       </div>
 
       {/* Text content */}
-      <div className="px-4 pb-4 pt-3 flex flex-col gap-2.5">
-        <h3 className="font-semibold text-xl leading-tight text-zinc-900">{name}</h3>
+      <div className="px-4 pb-4 pt-[20px] flex flex-col gap-1.5">
+        <h3 className="font-semibold text-xl leading-tight text-zinc-900 truncate" title={name}>
+          {name}
+        </h3>
+        <a
+          href="#"
+          className="text-black/40 text-sm hover:underline"
+        >
+          Read More →
+        </a>
 
-        <div className="flex items-center justify-between">
-          <p className="font-bold text-2xl tracking-tight pt-1 pl-1 text-green-500">{price.toFixed(0)}€</p>
+        <p className="font-bold text-2xl tracking-tight pt-1 pl-1 text-green-500">{price.toFixed(0)}€</p>
 
-          {/* Add to cart button */}
-          <motion.button
-            onClick={handleAddToCart}
-            whileHover={{ scale: 1.02, y: -1 }}
-            whileTap={{ scale: 0.98 }}
-            transition={spring}
-            className="flex-1 ml-4 inline-flex items-center justify-center rounded-full bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] text-white text-sm font-medium px-6 py-3 shadow-sm cursor-pointer"
-          >
-            Add to cart
-          </motion.button>
-        </div>
+        {/* Add to cart button */}
+        <motion.button
+          onClick={handleAddToCart}
+          whileHover={{ scale: 1.02, y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          transition={spring}
+          className="w-full mt-1 inline-flex items-center justify-center rounded-full bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] text-white text-sm font-medium px-6 py-3 shadow-sm cursor-pointer"
+        >
+          Add to cart
+        </motion.button>
       </div>
     </motion.article>
   );

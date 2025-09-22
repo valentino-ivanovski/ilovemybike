@@ -129,7 +129,7 @@ export default function BikeCarousel() {
   }, [api]);
 
   return (
-    <div className="relative w-full max-w-[1200px] mx-auto pt-4 pb-0 pl-0 md:px-6 md:pr-7.5">
+    <div className="relative w-full max-w-[1200px] mx-auto pt-4 pb-0 pl-[6.8px] md:px-6 md:pr-7.5">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex gap-6 py-2 pl-2">
           {bikes.map((bike, index) => (

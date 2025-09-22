@@ -106,11 +106,11 @@ export default function AccessoriesCarousel() {
   return (
     <div className="relative w-full max-w-[1200px] mx-auto pt-4 pb-0 pl-0 md:px-6 md:pr-7.5">
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-6 py-2 pl-2">
+        <div className="flex gap-6 py-2 pl-[16px] sm:pl-[19px]">
           {accessories.map((accessory, index) => (
             <div
               key={index}
-              className={`min-w-[280px] sm:min-w-[320px] max-w-[340px] flex-shrink-0 ${index === 0 ? "ml-3 sm:ml-0" : ""} ${index === accessories.length - 1 ? "mr-4 sm:mr-0" : ""}`}
+              className={`min-w-[250px] sm:min-w-[250px] max-w-[340px] flex-shrink-0 ${index === 0 ? "ml-3 sm:ml-0" : ""} ${index === accessories.length - 1 ? "mr-4 sm:mr-0" : ""}`}
             >
               <AccessoryCard {...accessory} />
             </div>
