@@ -67,7 +67,7 @@ export default function BikeCard({
       initial={{ opacity: 0, y: 12, filter: "blur(4px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={spring}
-      className="group flex flex-col bg-white rounded-3xl border border-black/5 shadow-md overflow-hidden"
+      className="group flex flex-col bg-white cursor-grab rounded-3xl border border-black/5 shadow-md overflow-hidden"
     >
       {/* Image + Favorite */}
       <div className="relative w-full h-64 bg-gradient-to-b from-white to-zinc-50">
@@ -76,7 +76,7 @@ export default function BikeCard({
           alt={name}
           fill
           priority={false}
-          className="object-contain p-6"
+          className="object-contain select-none pointer-events-none p-6"
         />
 
         {/* Favorites button */}
@@ -94,7 +94,7 @@ export default function BikeCard({
             transition={spring}
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
-            className="w-6 h-6 p-0.5"
+            className="w-6 h-6 p-0.5 cursor-pointer"
             fill={isFav ? "url(#goldHeart)" : "transparent"}
           >
             <defs>
@@ -115,13 +115,13 @@ export default function BikeCard({
 
       {/* Text content */}
       <div className="px-5 pb-5 pt-4 flex flex-col gap-2">
-        <p className="text-xs tracking-wide text-gray-500">{category}</p>
-        <h3 className="font-semibold text-xl leading-tight text-zinc-900">{name}</h3>
-        {brand && <p className="text-sm text-zinc-400">{brand}</p>}
-        <p className="text-sm text-zinc-500 leading-relaxed line-clamp-2">{description}</p>
+        <p className="text-xs tracking-wide text-gray-500 select-none pointer-events-none">{category}</p>
+        <h3 className="font-semibold text-xl max-w-fit leading-tight text-zinc-900 cursor-pointer hover:underline select-none">{name}</h3>
+        {brand && <p className="text-sm text-zinc-400 select-none pointer-events-none">{brand}</p>}
+        <p className="text-sm text-zinc-500 leading-relaxed line-clamp-2 select-none pointer-events-none">{description}</p>
 
         <div className="mt-1 flex items-center justify-between">
-          <p className="font-bold text-2xl tracking-tight pt-1 pl-1 text-green-500">{price.toFixed(0)}€</p>
+          <p className="font-bold text-2xl tracking-tight pt-1 pl-1 text-green-500 select-none pointer-events-none">{price.toFixed(0)}€</p>
 
           {/* Add to cart button */}
           <motion.button
@@ -129,7 +129,7 @@ export default function BikeCard({
             whileHover={{ scale: 1.02, y: -1 }}
             whileTap={{ scale: 0.98 }}
             transition={spring}
-            className="flex-1 ml-4.5 inline-flex items-center justify-center rounded-full bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] cursor-pointer text-white text-sm font-medium px-6 py-3 shadow-sm"
+            className="flex-1 ml-4.5 select-none pointer-events-none inline-flex items-center justify-center rounded-full bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] cursor-pointer text-white text-sm font-medium px-6 py-3 shadow-sm"
           >
             Add to cart
           </motion.button>
