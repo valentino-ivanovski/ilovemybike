@@ -223,9 +223,9 @@ const Header: React.FC = () => {
               </AnimatePresence>
             </div>
             <nav className="hidden sm:flex items-center gap-6 pl-8 pr-6 text-gray-700">
-              <a href="#" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Home</a>
-              <a href="#" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Shop</a>
-              <a href="#" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Contact</a>
+              <a href="/" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Home</a>
+              <a href="/shop" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Shop</a>
+              <a href="/contact" className="px-3 py-1 rounded-md hover:text-black hover:bg-gray-100 transition-colors">Contact</a>
             </nav>
           </div>
 
