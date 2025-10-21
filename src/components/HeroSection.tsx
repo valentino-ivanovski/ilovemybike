@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { IoIosArrowDown } from "react-icons/io";
+import Link from "next/link";
 
 const container: Variants = {
   hidden: { opacity: 0 },
@@ -100,15 +101,17 @@ export default function HeroSection() {
           <motion.p variants={item} className="text-lg text-gray-600 mt-2 max-w-[100%] md:max-w-[85%] pb-5">
             Tempor ad commodo nisi nostrud. Consequat elit mollit cillum proident consequat.
           </motion.p>
-          <motion.button
-            variants={item}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="rounded-full px-[23px] py-[8px] cursor-pointer bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] text-white"
-          >
-            Shop Now
-          </motion.button>
+          <Link href="/shop">
+            <motion.button
+              variants={item}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="rounded-full px-[23px] py-[8px] cursor-pointer bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] text-white"
+            >
+              Shop Now
+            </motion.button>
+          </Link>
         </motion.div>
       </div>
 
