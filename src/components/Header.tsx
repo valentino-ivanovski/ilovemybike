@@ -406,19 +406,19 @@ const Header: React.FC = () => {
               {/* Drawer primary nav links */}
               <nav className="p-4 flex flex-col gap-3 text-gray-700">
                 <a
-                  href="#"
+                  href="/"
                   className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium transition hover:bg-gray-100 transition-colors "
                 >
                   Home
                 </a>
                 <a
-                  href="#"
+                  href="/shop"
                   className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium transition hover:bg-gray-100 transition-colors "
                 >
                   Shop
                 </a>
                 <a
-                  href="#"
+                  href="/contact"
                   className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium transition hover:bg-gray-100 transition-colors "
                 >
                   Contact
