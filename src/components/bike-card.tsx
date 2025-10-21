@@ -71,6 +71,7 @@ export function BikeCard({ bike, section }: BikeCardProps) {
   const description = useMemo(() => getDescription(bike), [bike]);
   const categoryLabel = useMemo(() => formatLabel(bike.category), [bike.category]);
   const subcategoryLabel = useMemo(() => formatSubcategories(bike.subcategories), [bike.subcategories]);
+  const isPopular = useMemo(() => "popular" in bike && Boolean((bike as InStockBike).popular), [bike]);
 
   useEffect(() => {
     setIsFav(isInFavorites(bikeId));
@@ -135,7 +136,7 @@ export function BikeCard({ bike, section }: BikeCardProps) {
           </Link>
         )}
 
-        {bike.popular && (
+        {isPopular && (
           <span className="absolute left-4 top-4 rounded-full bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] px-4 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
             Popular
           </span>
