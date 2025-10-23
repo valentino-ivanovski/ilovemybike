@@ -108,6 +108,7 @@ export function BikeCard({ bike, section }: BikeCardProps) {
       image: primaryImage ?? "",
       category: categoryLabel,
       description,
+      section,
     });
   };
 

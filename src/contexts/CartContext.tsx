@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { ShopSection } from '@/lib/types';
 
 export interface CartItem {
   id: string;
@@ -12,6 +13,7 @@ export interface CartItem {
   category: string;
   description: string;
   quantity: number;
+  section?: ShopSection;
 }
 
 export interface FavoriteItem {
@@ -43,15 +45,25 @@ const initialState: CartState = {
   favorites: [],
 };
 
+function withDefaultSection(item: Omit<CartItem, 'quantity'> & { quantity?: number }): CartItem {
+  const section = item.section ?? 'in-stock';
+  return {
+    ...item,
+    section,
+    quantity: item.quantity ?? 1,
+  };
+}
+
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'ADD_TO_CART': {
-      const existingItem = state.items.find(item => item.id === action.payload.id);
+      const payload = withDefaultSection(action.payload);
+      const existingItem = state.items.find(item => item.id === payload.id);
       if (existingItem) {
         return {
           ...state,
           items: state.items.map(item =>
-            item.id === action.payload.id
+            item.id === payload.id
               ? { ...item, quantity: item.quantity + 1 }
               : item
           ),
@@ -59,7 +71,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       }
       return {
         ...state,
-        items: [...state.items, { ...action.payload, quantity: 1 }],
+        items: [...state.items, payload],
       };
     }
     case 'REMOVE_FROM_CART':
@@ -101,7 +113,14 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         favorites: state.favorites.filter(item => item.id !== action.payload),
       };
     case 'LOAD_STATE':
-      return action.payload;
+      return {
+        items: Array.isArray(action.payload.items)
+          ? action.payload.items.map(item => withDefaultSection(item))
+          : [],
+        favorites: Array.isArray(action.payload.favorites)
+          ? action.payload.favorites
+          : [],
+      };
     default:
       return state;
   }

@@ -1,4 +1,5 @@
 "use client";
+import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaTimes, FaPlus, FaMinus } from "react-icons/fa";
 import { useCart } from "@/contexts/CartContext";
@@ -14,6 +15,50 @@ export default function CartSidepanel({
   const { state, updateQuantity, removeFromCart, getTotalPrice, clearCart } = useCart();
   const { items } = state;
   const total = getTotalPrice();
+  const [isCheckingOut, setCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  const inStockItems = useMemo(
+    () => items.filter((item) => (item.section ?? "in-stock") === "in-stock"),
+    [items],
+  );
+  const hasPurchasableItems = inStockItems.length > 0;
+
+  const handleCheckout = async () => {
+    if (!hasPurchasableItems || isCheckingOut) {
+      return;
+    }
+
+    setCheckoutError(null);
+    setCheckingOut(true);
+
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const message = typeof data?.error === "string" ? data.error : "Unable to start checkout.";
+        setCheckoutError(message);
+        return;
+      }
+
+      if (typeof data?.url === "string" && data.url.length > 0) {
+        window.location.assign(data.url);
+        return;
+      }
+
+      setCheckoutError("Stripe checkout URL missing. Please try again.");
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : "Unexpected error. Please try again.");
+    } finally {
+      setCheckingOut(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -103,9 +148,26 @@ export default function CartSidepanel({
                 <span className="font-semibold">{total.toFixed(2)} €</span>
               </div>
               <div className="space-y-2">
-                <button className="w-full py-2 rounded-md bg-black text-white hover:opacity-90 active:scale-[.99] transition">
-                  Checkout
+                <button
+                  onClick={handleCheckout}
+                  disabled={!hasPurchasableItems || isCheckingOut}
+                  className="w-full py-2 rounded-md bg-black text-white hover:opacity-90 active:scale-[.99] transition disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isCheckingOut ? "Redirecting..." : "Checkout"}
                 </button>
+                {checkoutError && (
+                  <p className="text-xs text-red-600">{checkoutError}</p>
+                )}
+                {items.length > 0 && !hasPurchasableItems && (
+                  <p className="text-xs text-amber-600">
+                    Only In Stock items can be purchased online. Add an In Stock bike to continue.
+                  </p>
+                )}
+                {hasPurchasableItems && inStockItems.length < items.length && (
+                  <p className="text-xs text-amber-600">
+                    Items outside the In Stock section will stay in your cart.
+                  </p>
+                )}
                 {items.length > 0 && (
                   <button 
                     onClick={clearCart}

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
+import { ShopSection } from "@/lib/types";
 
 interface BikeCardProps {
   id: string;
@@ -13,6 +14,7 @@ interface BikeCardProps {
   description: string;
   price: number;
   image: string;
+  section?: ShopSection;
 }
 
 const spring = { type: "spring", stiffness: 300, damping: 15 } as const;
@@ -25,6 +27,7 @@ export default function BikeCard({
   description,
   price,
   image,
+  section = "in-stock",
 }: BikeCardProps) {
   const { addToCart, addToFavorites, removeFromFavorites, isInFavorites } = useCart();
   const [isFav, setIsFav] = useState(false);
@@ -59,6 +62,7 @@ export default function BikeCard({
       image,
       category,
       description,
+      section,
     });
   };
 
