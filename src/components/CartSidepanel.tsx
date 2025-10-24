@@ -109,6 +109,9 @@ export default function CartSidepanel({
                           {it.brand && (
                             <div className="text-xs text-gray-400">{it.brand}</div>
                           )}
+                          {it.variantName && (
+                            <div className="text-xs text-gray-500">Variant: {it.variantName}</div>
+                          )}
                           <div className="text-xs text-gray-500">{it.price.toFixed(2)} €</div>
                           <div className="mt-2 flex items-center gap-2">
                             <button
