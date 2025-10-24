@@ -18,6 +18,8 @@ type CheckoutPayload = {
     quantity: number;
     image?: string;
     section?: string;
+    variantId?: number;
+    variantName?: string;
   }>;
 };
 
@@ -47,20 +49,32 @@ export async function POST(request: NextRequest) {
     const lineItems = inStockItems.map((item) => {
       const quantity = Number.isFinite(item.quantity) && item.quantity > 0 ? Math.floor(item.quantity) : 1;
       const unitAmount = Math.round((Number(item.price) || 0) * 100);
+      const variantName = typeof item.variantName === 'string' ? item.variantName.trim() : '';
+      const productName = variantName ? `${item.name} (${variantName})` : item.name;
 
       if (unitAmount <= 0) {
         throw new Error(`Invalid price for item ${item.id}`);
+      }
+
+      const metadata: Record<string, string> = {
+        id: item.id,
+        section: 'in-stock',
+      };
+
+      if (variantName) {
+        metadata.variantName = variantName;
+      }
+
+      if (item.variantId !== undefined && item.variantId !== null) {
+        metadata.variantId = String(item.variantId);
       }
 
       return {
         price_data: {
           currency: 'eur',
           product_data: {
-            name: item.name,
-            metadata: {
-              id: item.id,
-              section: 'in-stock',
-            },
+            name: productName,
+            metadata,
             ...(item.image ? { images: [item.image] } : {}),
           },
           unit_amount: unitAmount,

@@ -53,6 +53,7 @@ type InStockVariantRow = {
   price: number | string
   price_sale: number | string | null
   stock: number | string
+  color_class: string | null
 }
 
 function parseNumeric(value: number | string | null, fallback: number | null = null): number | null {
@@ -129,7 +130,8 @@ function mapVariant(row: InStockVariantRow): BikeVariant {
     variant_name: row.variant_name,
     price: parseNumeric(row.price, 0) ?? 0,
     price_sale: parseNumeric(row.price_sale),
-    stock: parseNumeric(row.stock, 0) ?? 0
+    stock: parseNumeric(row.stock, 0) ?? 0,
+    color_class: row.color_class
   }
 }
 
@@ -228,7 +230,10 @@ export async function getReadyToOrderSubcategories(category?: string): Promise<s
   return [...new Set(subcategories)].sort((a, b) => a.localeCompare(b))
 }
 
-export async function getInStockBikes(filters: SectionFilters): Promise<PaginatedBikes<InStockBike>> {
+export async function getInStockBikes(
+  filters: SectionFilters,
+  options: { includeVariants?: boolean } = {}
+): Promise<PaginatedBikes<InStockBikeWithVariants>> {
   const { category, subcategory, sortBy, sortOrder, page } = filters
   const { from, to, page: safePage } = buildPagination(page)
 
@@ -265,11 +270,47 @@ export async function getInStockBikes(filters: SectionFilters): Promise<Paginate
   }
 
   const total = count || 0
-  const bikes = (data as InStockBikeRow[] | null)?.map(mapInStockBike) ?? []
+  const mappedBikes = (data as InStockBikeRow[] | null)?.map(mapInStockBike) ?? []
+  let bikesWithVariants: InStockBikeWithVariants[] = mappedBikes.map((bike) => ({
+    ...bike,
+    variants: []
+  }))
+
+  if (options.includeVariants !== false && bikesWithVariants.length > 0) {
+    const bikeIds = bikesWithVariants.map((bike) => bike.id)
+    const { data: variantsData, error: variantsError } = await supabase
+      .from(VARIANT_TABLE)
+      .select('*')
+      .in('bike_id', bikeIds)
+
+    if (!variantsError && Array.isArray(variantsData)) {
+      const variantMap = new Map<number, BikeVariant[]>()
+      for (const row of variantsData as InStockVariantRow[]) {
+        const variant = mapVariant(row)
+        const list = variantMap.get(variant.bike_id)
+        if (list) {
+          list.push(variant)
+        } else {
+          variantMap.set(variant.bike_id, [variant])
+        }
+      }
+
+      bikesWithVariants = bikesWithVariants.map((bike) => ({
+        ...bike,
+        variants: variantMap.get(bike.id) ?? []
+      }))
+    } else if (variantsError) {
+      const message = variantsError.message.toLowerCase()
+      if (!message.includes('could not find the table')) {
+        throw new Error(`Failed to fetch bike variants: ${variantsError.message}`)
+      }
+    }
+  }
+
   const totalPages = total === 0 ? 1 : Math.ceil(total / ITEMS_PER_PAGE)
 
   return {
-    bikes,
+    bikes: bikesWithVariants,
     total,
     page: safePage,
     totalPages

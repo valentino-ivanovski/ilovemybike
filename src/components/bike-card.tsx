@@ -6,19 +6,20 @@ import { useEffect, useMemo, useState } from "react";
 import type { MouseEvent } from "react";
 import { motion } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
-import { InStockBike, ReadyBike, ShopSection } from "@/lib/types";
+import { InStockBike, InStockBikeWithVariants, ReadyBike, ShopSection, BikeVariant } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { resolveVariantColorClass, stringToColor } from "@/lib/variant-colors";
 
 interface BikeCardProps {
-  bike: ReadyBike | InStockBike;
+  bike: ReadyBike | InStockBikeWithVariants;
   section: ShopSection;
 }
 
-const SECTION_LABELS: Record<ShopSection, string> = {
-  "in-stock": "In Stock",
-  "ready-to-order": "Ready to Order",
-};
-
 const spring = { type: "spring", stiffness: 300, damping: 15 } as const;
+
+function isInStockBikeWithVariants(bike: ReadyBike | InStockBike | InStockBikeWithVariants): bike is InStockBikeWithVariants {
+  return Array.isArray((bike as InStockBikeWithVariants).variants);
+}
 
 function formatPrice(price: number | null | undefined): string {
   if (price === null || price === undefined) {
@@ -66,13 +67,21 @@ export function BikeCard({ bike, section }: BikeCardProps) {
   const bikeId = String(bike.id);
   const href = `/bike/${bike.id}?section=${section}`;
   const primaryImage = bike.images[0] ?? null;
-  const primaryPrice = bike.new_price ?? bike.old_price;
+  const inStockVariants = useMemo<BikeVariant[]>(() => {
+    if (section !== "in-stock") {
+      return [];
+    }
+    if (isInStockBikeWithVariants(bike)) {
+      return bike.variants;
+    }
+    return [];
+  }, [bike, section]);
+  const firstVariant = inStockVariants[0] ?? null;
+  const primaryPrice = firstVariant ? firstVariant.price : (bike.new_price ?? bike.old_price);
   const formattedPrice = useMemo(() => formatPrice(primaryPrice), [primaryPrice]);
   const description = useMemo(() => getDescription(bike), [bike]);
   const categoryLabel = useMemo(() => formatLabel(bike.category), [bike.category]);
-  const subcategoryLabel = useMemo(() => formatSubcategories(bike.subcategories), [bike.subcategories]);
   const isPopular = useMemo(() => "popular" in bike && Boolean((bike as InStockBike).popular), [bike]);
-
   useEffect(() => {
     setIsFav(isInFavorites(bikeId));
   }, [bikeId, isInFavorites]);
@@ -100,15 +109,30 @@ export function BikeCard({ bike, section }: BikeCardProps) {
     event.preventDefault();
     event.stopPropagation();
 
+    const variantDetails = firstVariant
+      ? {
+          id: `variant-${firstVariant.id}`,
+          price: firstVariant.price,
+          variantId: firstVariant.id,
+          variantName: firstVariant.variant_name,
+        }
+      : null;
+
     addToCart({
-      id: bikeId,
+      id: variantDetails?.id ?? bikeId,
       name: bike.title,
       brand: bike.brand,
-      price: primaryPrice ?? 0,
+      price: variantDetails?.price ?? (primaryPrice ?? 0),
       image: primaryImage ?? "",
       category: categoryLabel,
       description,
       section,
+      ...(variantDetails
+        ? {
+            variantId: variantDetails.variantId,
+            variantName: variantDetails.variantName,
+          }
+        : {}),
     });
   };
 
@@ -141,6 +165,27 @@ export function BikeCard({ bike, section }: BikeCardProps) {
           <span className="absolute left-4 top-4 rounded-full bg-gradient-to-tr from-[#1F1F1F] to-[#4D4D4D] px-4 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
             Popular
           </span>
+        )}
+
+        {inStockVariants.length > 1 && (
+          <div className="absolute bottom-4 left-4 flex items-center gap-1.5 rounded-full bg-white/85 px-2 py-1 shadow-sm backdrop-blur-sm">
+            {inStockVariants.slice(0, 5).map((variant) => {
+              const backgroundClass = resolveVariantColorClass(variant.color_class);
+              const fallbackColorStyle = backgroundClass ? undefined : { backgroundColor: stringToColor(variant.variant_name) };
+              return (
+                <span
+                  key={variant.id}
+                  className={cn("h-4 w-4 rounded-[4px] border border-black/10", backgroundClass ?? "")}
+                  style={fallbackColorStyle}
+                  aria-label={variant.variant_name}
+                  title={variant.variant_name}
+                />
+              );
+            })}
+            {inStockVariants.length > 5 && (
+              <span className="ml-1 text-[10px] font-medium text-gray-700">+{inStockVariants.length - 5}</span>
+            )}
+          </div>
         )}
 
         <motion.button

@@ -35,6 +35,7 @@ export interface BikeVariant {
   price: number
   price_sale: number | null
   stock: number
+  color_class?: string | null
 }
 
 export interface SectionFilters {

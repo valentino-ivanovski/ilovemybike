@@ -6,6 +6,9 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { Button } from "@/components/ui/button"
 import { ShopSectionToggle } from "@/components/shop-section-toggle"
 import { InStockBikeWithVariants, ReadyBike, ShopSection } from "@/lib/types"
+import { cn } from "@/lib/utils"
+import { useCart } from "@/contexts/CartContext"
+import { resolveVariantColorClass, stringToColor } from "@/lib/variant-colors"
 
 const SECTION_LABELS: Record<ShopSection, string> = {
   "in-stock": "In Stock",
@@ -58,15 +61,6 @@ function buildReadyDescription(bike: ReadyBike): string {
   return `Discover the ${bike.title} from ${bike.brand}. This ${categories.toLowerCase()} bike is ready to order and ideal for ${rides.toLowerCase()} rides.`
 }
 
-function stringToColor(value: string): string {
-  let hash = 0
-  for (let i = 0; i < value.length; i += 1) {
-    hash = value.charCodeAt(i) + ((hash << 5) - hash)
-  }
-  const hue = Math.abs(hash) % 360
-  return `hsl(${hue}, 70%, 55%)`
-}
-
 export function BikeDetailContent({
   section,
   activeBike,
@@ -74,10 +68,14 @@ export function BikeDetailContent({
   readyBike,
   toggleOptions
 }: BikeDetailContentProps) {
+  const { addToCart, addToFavorites, removeFromFavorites, isInFavorites } = useCart()
   const isInStock = section === "in-stock" && Boolean(inStockBike)
   const currentInStock = isInStock && inStockBike ? inStockBike : null
   const variants = currentInStock?.variants ?? []
+  const hasVariantChoices = variants.length > 1
   const [selectedVariantId, setSelectedVariantId] = useState<number | null>(variants[0]?.id ?? null)
+  const bikeId = String(activeBike.id)
+  const [isFavorite, setIsFavorite] = useState(() => isInFavorites(bikeId))
 
   useEffect(() => {
     if (variants.length === 0) {
@@ -110,6 +108,59 @@ export function BikeDetailContent({
       : readyBike
         ? buildReadyDescription(readyBike)
         : ""
+
+  const handleAddToCart = () => {
+    if (variants.length > 0 && !selectedVariant) {
+      return
+    }
+
+    const primaryImage = activeBike.images[0] ?? ""
+    const variantDetails = selectedVariant
+      ? {
+          variantId: selectedVariant.id,
+          variantName: selectedVariant.variant_name
+        }
+      : {}
+
+    const cartItemId = selectedVariant ? `variant-${selectedVariant.id}` : `bike-${activeBike.id}`
+
+    addToCart({
+      id: cartItemId,
+      name: activeBike.title,
+      brand: activeBike.brand,
+      price: displayPrice ?? 0,
+      image: primaryImage,
+      category: formatLabel(activeBike.category),
+      description: descriptionText,
+      section,
+      ...variantDetails
+    })
+  }
+
+  const disableAddToCart = hasVariantChoices && !selectedVariant
+
+  useEffect(() => {
+    setIsFavorite(isInFavorites(bikeId))
+  }, [bikeId, isInFavorites])
+
+  const handleToggleFavorite = () => {
+    if (isFavorite) {
+      removeFromFavorites(bikeId)
+      setIsFavorite(false)
+      return
+    }
+
+    addToFavorites({
+      id: bikeId,
+      name: activeBike.title,
+      brand: activeBike.brand,
+      price: displayPrice ?? activeBike.old_price ?? 0,
+      image: activeBike.images[0] ?? "",
+      category: formatLabel(activeBike.category),
+      description: descriptionText
+    })
+    setIsFavorite(true)
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 lg:min-h-screen lg:flex lg:items-center lg:justify-center">
@@ -168,21 +219,39 @@ export function BikeDetailContent({
             </p>
           </div>
 
-          {currentInStock && variants.length > 0 && (
+          {currentInStock && hasVariantChoices && (
             <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Variants</h3>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {variants.map((variant) => {
                     const isSelected = variant.id === selectedVariantId
+                    const backgroundClass = resolveVariantColorClass(variant.color_class)
+                    const fallbackColorStyle = backgroundClass ? undefined : { backgroundColor: stringToColor(variant.variant_name) }
+
                     return (
                       <Button
                         key={`variant-${variant.id}`}
                         type="button"
-                        variant={isSelected ? "default" : "outline"}
+                        variant="outline"
+                        size="icon"
                         onClick={() => setSelectedVariantId(variant.id)}
-                        className="rounded-full px-4 py-2 text-sm"
+                        className={cn(
+                          "h-10 w-10 rounded-md border border-border bg-background p-0 transition-all",
+                          isSelected
+                            ? "ring-2 ring-primary ring-offset-2"
+                            : "hover:ring-2 hover:ring-primary/40 hover:ring-offset-2"
+                        )}
+                        aria-label={variant.variant_name}
+                        title={variant.variant_name}
                       >
-                        {variant.variant_name}
+                        <span
+                          className={cn(
+                            "block h-6 w-6 rounded-md border border-black/10",
+                            backgroundClass ?? ""
+                          )}
+                          style={fallbackColorStyle}
+                        />
+                        <span className="sr-only">{variant.variant_name}</span>
                       </Button>
                     )
                   })}
@@ -191,13 +260,19 @@ export function BikeDetailContent({
           )}
 
           <div className="flex flex-wrap gap-4">
-            <Button className="inline-flex items-center gap-2">
+            <Button className="inline-flex items-center gap-2" onClick={handleAddToCart} disabled={disableAddToCart}>
               <ShoppingCart className="h-4 w-4" />
               Add to Cart
             </Button>
-            <Button variant="outline" className="inline-flex items-center gap-2">
-              <Heart className="h-4 w-4" />
-              Favorite
+            <Button
+              type="button"
+              variant={isFavorite ? "default" : "outline"}
+              className="inline-flex items-center gap-2"
+              onClick={handleToggleFavorite}
+              aria-pressed={isFavorite}
+            >
+              <Heart className="h-4 w-4" fill={isFavorite ? "currentColor" : "none"} />
+              {isFavorite ? "Favorited" : "Favorite"}
             </Button>
             {youtubeLink ? (
               <Button variant="secondary" className="inline-flex items-center gap-2" asChild>

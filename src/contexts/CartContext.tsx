@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { ShopSection } from '@/lib/types';
+import { useToast } from './ToastContext';
 
 export interface CartItem {
   id: string;
@@ -14,6 +15,8 @@ export interface CartItem {
   description: string;
   quantity: number;
   section?: ShopSection;
+  variantId?: number;
+  variantName?: string;
 }
 
 export interface FavoriteItem {
@@ -144,6 +147,10 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
   const [/*storedState*/, setStoredState] = useLocalStorage<CartState>('cart-state', initialState);
+  const { showToast } = useToast();
+
+  const formatItemName = (item: Pick<CartItem, 'name' | 'variantName'>) =>
+    item.variantName ? `${item.name} (${item.variantName})` : item.name;
 
   useEffect(() => {
     try {
@@ -163,11 +170,28 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [state, setStoredState]);
 
   const addToCart = (item: Omit<CartItem, 'quantity'>) => {
+    const existingItem = state.items.find(existing => existing.id === item.id);
     dispatch({ type: 'ADD_TO_CART', payload: item });
+    const itemLabel = formatItemName(item);
+    showToast({
+      title: existingItem ? 'Updated cart' : 'Added to cart',
+      description: existingItem
+        ? `Increased quantity for ${itemLabel}.`
+        : `${itemLabel} added to your cart.`,
+      variant: 'success',
+    });
   };
 
   const removeFromCart = (id: string) => {
+    const removedItem = state.items.find(item => item.id === id);
     dispatch({ type: 'REMOVE_FROM_CART', payload: id });
+    if (removedItem) {
+      showToast({
+        title: 'Removed from cart',
+        description: `${formatItemName(removedItem)} removed.`,
+        variant: 'default',
+      });
+    }
   };
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -176,14 +200,43 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = () => {
     dispatch({ type: 'CLEAR_CART' });
+    if (state.items.length > 0) {
+      showToast({
+        title: 'Cart cleared',
+        description: 'All items removed from your cart.',
+        variant: 'default',
+      });
+    }
   };
 
   const addToFavorites = (item: FavoriteItem) => {
+    const exists = state.favorites.some(fav => fav.id === item.id);
+    if (exists) {
+      showToast({
+        title: 'Already in favorites',
+        description: `${item.name} is already saved.`,
+        variant: 'default',
+      });
+      return;
+    }
     dispatch({ type: 'ADD_TO_FAVORITES', payload: item });
+    showToast({
+      title: 'Added to favorites',
+      description: `${item.name} saved for later.`,
+      variant: 'success',
+    });
   };
 
   const removeFromFavorites = (id: string) => {
     dispatch({ type: 'REMOVE_FROM_FAVORITES', payload: id });
+    const removed = state.favorites.find(item => item.id === id);
+    if (removed) {
+      showToast({
+        title: 'Removed from favorites',
+        description: `${removed.name} removed from your favorites.`,
+        variant: 'default',
+      });
+    }
   };
 
   const isInFavorites = (id: string) => {
