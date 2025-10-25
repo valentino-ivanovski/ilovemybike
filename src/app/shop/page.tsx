@@ -4,7 +4,6 @@ import { BikeCard } from "@/components/bike-card"
 import { ShopFilters } from "@/components/shop-filters"
 import { ShopPagination } from "@/components/shop-pagination"
 import { ShopSectionToggle } from "@/components/shop-section-toggle"
-import Header from "@/components/Header"
 import {
   getInStockBikes,
   getInStockCategories,
@@ -73,9 +72,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
   return (
     <div className="min-h-screen pt-24">
-
-      <Header />
-
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col gap-8 lg:flex-row">
           <div className="lg:w-64">

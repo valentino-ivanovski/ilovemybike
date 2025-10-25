@@ -2,8 +2,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
 import { ToastProvider } from "@/contexts/ToastContext";
-import NewHeader from "@/components/NewHeader";
-import Footer from "@/components/Footer";
+
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -33,9 +32,7 @@ export default function RootLayout({
       <body className={manrope.className}>
         <ToastProvider>
           <CartProvider>
-            <NewHeader />
             <main>{children}</main>
-            <Footer />
           </CartProvider>
         </ToastProvider>
       </body>
