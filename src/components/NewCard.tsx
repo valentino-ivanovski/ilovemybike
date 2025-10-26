@@ -76,23 +76,7 @@ export default function NewCard({
       </div>
 
       <div className="relative mx-4 my-2 flex-1">
-        {brand === "Shengmilo" ? (
-          <Image
-            src={imageSrc}
-            alt={title}
-            fill
-            className="object-contain scale-150 z-0 transform -translate-y-3.5"
-            priority
-          />
-        ) : brand === "Samebike" ? (
-          <Image
-            src={imageSrc}
-            alt={title}
-            fill
-            className="object-contain scale-100 z-0 transform -translate-y-3"
-            priority
-          />
-        ) : (
+        
           <Image
             src={imageSrc}
             alt={title}
@@ -100,7 +84,7 @@ export default function NewCard({
             className="object-contain"
             priority
           />
-        )}
+
       </div>
 
       <div className="flex z-50 items-center justify-between px-4 pb-4 pt-2">

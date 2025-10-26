@@ -4,6 +4,10 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { IoIosArrowDown } from "react-icons/io";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getPopularInStockBikes } from "@/lib/bikes";
@@ -36,8 +40,49 @@ export default function HeroSection() {
     };
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.innerWidth >= 768) return; // only on mobile
+
+    const sections = document.querySelectorAll("section");
+    let isAnimating = false;
+
+    sections.forEach((section, i) => {
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: "bottom top",
+        onLeave: () => {
+          if (!isAnimating && i < sections.length - 1) {
+            isAnimating = true;
+            gsap.to(window, {
+              duration: 1,
+              scrollTo: { y: sections[i + 1], offsetY: 0 },
+              onComplete: () => (isAnimating = false),
+              ease: "power2.inOut",
+            });
+          }
+        },
+        onEnterBack: () => {
+          if (!isAnimating && i > 0) {
+            isAnimating = true;
+            gsap.to(window, {
+              duration: 1,
+              scrollTo: { y: sections[i - 1], offsetY: 0 },
+              onComplete: () => (isAnimating = false),
+              ease: "power2.inOut",
+            });
+          }
+        },
+      });
+    });
+
+    return () => ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  }, []);
+
   return (
-    <section className="relative h-[calc(100vh-58px)] md:h-[calc(100vh-106px)] flex items-center justify-center overflow-hidden">
+    <>
+    <section className="relative h-[calc(100vh-55px)] md:h-[calc(100vh-106px)] flex items-center justify-center overflow-hidden">
       <div className="w-full h-full flex flex-col md:flex-row">
         
         {/* Left Side */}
@@ -114,8 +159,44 @@ export default function HeroSection() {
             )}
           </div>
         </div>
-
       </div>
     </section>
+    <section className="block md:hidden h-[calc(100vh-0px)]">
+      <div className="w-full h-full md:w-1/2 bg-white flex flex-col">
+        <div className="div3 flex md:hidden h-full bg-slate-100">
+          {popularBikes.length > 0 ? (
+            <div className="flex h-full w-full overflow-x-auto scrollbar-hide overflow-x-scroll [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="grid h-full min-w-full grid-flow-col grid-rows-2 gap-0 auto-cols-[minmax(300px,1fr)]">
+                {popularBikes.map((bike) => {
+                  const coverImage = bike.images[0] || "/images/3.webp";
+                  const price = bike.new_price ?? bike.old_price;
+                  const subcategory = bike.subcategories[0];
+                  return (
+                    <NewCard
+                      key={bike.id}
+                      id={String(bike.id)}
+                      title={bike.title}
+                      brand={bike.brand}
+                      description={bike.description}
+                      price={price}
+                      category={bike.category}
+                      subcategory={subcategory}
+                      popular={bike.popular ? "Popular" : undefined}
+                      imageSrc={coverImage}
+                      className="h-full"
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-sm text-gray-500">
+              Loading popular bikes...
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  </>
   );
 }
