@@ -24,7 +24,7 @@ const NewHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full h-[54px] sm:h-[48px] border-b font-semibold text-black bg-gray-100">
+    <header className="sticky top-0 z-40 w-full h-[54px] sm:h-[48px] border-b border-gray-300 font-semibold text-black bg-gray-100">
       <nav className="w-full">
         <div className="flex flex-row items-center justify-between px-6 2xl:px-20 transform translate-y-[15px] sm:translate-y-[12px]">
           <Link href="/shop" className="text-sm  hover:underline cursor-pointer">

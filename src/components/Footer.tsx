@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="w-full border h-[58px] text-black font-semibold transform text-[12px] md:text-sm bg-gray-100">
+    <footer className="w-full border-t border-gray-300 sm:border-none h-[58px] text-black font-semibold transform text-[12px] md:text-sm bg-gray-100">
       <div className="flex flex-row items-center justify-between px-6 py-0 2xl:px-20 transform translate-y-[20px] sm:translate-y-[18px]">
           <Link href="/shop" className="font-semibold hover:underline cursor-pointer">
             ©2025 I LOVE MY BIKE

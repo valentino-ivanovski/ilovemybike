@@ -135,6 +135,55 @@ function mapVariant(row: InStockVariantRow): BikeVariant {
   }
 }
 
+async function attachVariantsToBikes(
+  bikes: InStockBike[],
+  includeVariants?: boolean
+): Promise<InStockBikeWithVariants[]> {
+  if (bikes.length === 0) {
+    return []
+  }
+
+  if (includeVariants === false) {
+    return bikes.map((bike) => ({
+      ...bike,
+      variants: []
+    }))
+  }
+
+  const bikeIds = bikes.map((bike) => bike.id)
+  const { data: variantsData, error: variantsError } = await supabase
+    .from(VARIANT_TABLE)
+    .select('*')
+    .in('bike_id', bikeIds)
+
+  if (variantsError) {
+    const message = variantsError.message.toLowerCase()
+    if (!message.includes('could not find the table')) {
+      throw new Error(`Failed to fetch bike variants: ${variantsError.message}`)
+    }
+    return bikes.map((bike) => ({
+      ...bike,
+      variants: []
+    }))
+  }
+
+  const variantMap = new Map<number, BikeVariant[]>()
+  for (const row of (variantsData as InStockVariantRow[]) ?? []) {
+    const variant = mapVariant(row)
+    const list = variantMap.get(variant.bike_id)
+    if (list) {
+      list.push(variant)
+    } else {
+      variantMap.set(variant.bike_id, [variant])
+    }
+  }
+
+  return bikes.map((bike) => ({
+    ...bike,
+    variants: variantMap.get(bike.id) ?? []
+  }))
+}
+
 function buildPagination(page: number) {
   const currentPage = page > 0 ? page : 1
   const from = (currentPage - 1) * ITEMS_PER_PAGE
@@ -271,41 +320,7 @@ export async function getInStockBikes(
 
   const total = count || 0
   const mappedBikes = (data as InStockBikeRow[] | null)?.map(mapInStockBike) ?? []
-  let bikesWithVariants: InStockBikeWithVariants[] = mappedBikes.map((bike) => ({
-    ...bike,
-    variants: []
-  }))
-
-  if (options.includeVariants !== false && bikesWithVariants.length > 0) {
-    const bikeIds = bikesWithVariants.map((bike) => bike.id)
-    const { data: variantsData, error: variantsError } = await supabase
-      .from(VARIANT_TABLE)
-      .select('*')
-      .in('bike_id', bikeIds)
-
-    if (!variantsError && Array.isArray(variantsData)) {
-      const variantMap = new Map<number, BikeVariant[]>()
-      for (const row of variantsData as InStockVariantRow[]) {
-        const variant = mapVariant(row)
-        const list = variantMap.get(variant.bike_id)
-        if (list) {
-          list.push(variant)
-        } else {
-          variantMap.set(variant.bike_id, [variant])
-        }
-      }
-
-      bikesWithVariants = bikesWithVariants.map((bike) => ({
-        ...bike,
-        variants: variantMap.get(bike.id) ?? []
-      }))
-    } else if (variantsError) {
-      const message = variantsError.message.toLowerCase()
-      if (!message.includes('could not find the table')) {
-        throw new Error(`Failed to fetch bike variants: ${variantsError.message}`)
-      }
-    }
-  }
+  const bikesWithVariants = await attachVariantsToBikes(mappedBikes, options.includeVariants)
 
   const totalPages = total === 0 ? 1 : Math.ceil(total / ITEMS_PER_PAGE)
 
@@ -355,6 +370,24 @@ export async function getInStockSubcategories(category?: string): Promise<string
     .filter(Boolean)
 
   return [...new Set(subcategories)].sort((a, b) => a.localeCompare(b))
+}
+
+export async function getPopularInStockBikes(
+  options: { includeVariants?: boolean } = {}
+): Promise<InStockBikeWithVariants[]> {
+  const { data, error } = await supabase
+    .from(IN_STOCK_TABLE)
+    .select('*')
+    .eq('stock', true)
+    .eq('popular', true)
+    .order('title', { ascending: true })
+
+  if (error) {
+    throw new Error(`Failed to fetch popular in-stock bikes: ${error.message}`)
+  }
+
+  const bikes = (data as InStockBikeRow[] | null)?.map(mapInStockBike) ?? []
+  return attachVariantsToBikes(bikes, options.includeVariants)
 }
 
 export async function getReadyToOrderBikeById(id: number): Promise<ReadyBike | null> {

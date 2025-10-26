@@ -92,7 +92,10 @@ export default function HeroSection() {
                     return (
                       <NewCard
                         key={bike.id}
+                        id={String(bike.id)}
                         title={bike.title}
+                        brand={bike.brand}
+                        description={bike.description}
                         price={price}
                         category={bike.category}
                         subcategory={subcategory}
