@@ -95,7 +95,7 @@ export default function HeroSection() {
                 We create <br /> New ways <br /> To move.
               </span>
               <span className="absolute bottom-4 right-4 text-sm sm:text-lg leading-tight text-right text-gray-500">
-                Designed in <br /> Amsterdam, <br /> Handmade <br /> in Europe
+                Located in <br /> Argostoli, <br /> Available <br /> around Greece
               </span>
             </div>
           </div>
