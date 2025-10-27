@@ -58,7 +58,9 @@ export default function HeroSection() {
             gsap.to(window, {
               duration: 1,
               scrollTo: { y: sections[i + 1], offsetY: 0 },
-              onComplete: () => (isAnimating = false),
+              onComplete: () => {
+                isAnimating = false;
+              },
               ease: "power2.inOut",
             });
           }
@@ -69,7 +71,9 @@ export default function HeroSection() {
             gsap.to(window, {
               duration: 1,
               scrollTo: { y: sections[i - 1], offsetY: 0 },
-              onComplete: () => (isAnimating = false),
+              onComplete: () => {
+                isAnimating = false;
+              },
               ease: "power2.inOut",
             });
           }
