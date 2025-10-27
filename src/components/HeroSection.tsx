@@ -92,6 +92,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
               loop
               muted
               playsInline
+              preload="auto"
             />
             <span className="absolute inset-0 flex items-end justify-center md:items-end md:justify-start text-left text-3xl sm:text-4xl font-regular text-white pl-4 pb-8 sm:pl-4 sm:pb-4 sm:max-w-lg">
               "One of the best e-bikes available at any price and far and away my favourite ride of the year".

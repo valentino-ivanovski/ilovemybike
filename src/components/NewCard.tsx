@@ -2,6 +2,7 @@ import { FiHeart } from "react-icons/fi";
 import Image from "next/image";
 import type { ComponentPropsWithoutRef } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { motion } from "framer-motion";
 
 type NewCardProps = ComponentPropsWithoutRef<"div"> & {
   id: string;
@@ -92,14 +93,17 @@ export default function NewCard({
           {category}
           {subcategory ? ` · ${subcategory}` : ""}
         </p>
-        <button
+        <motion.button
           type="button"
           onClick={handleAddToFavorites}
-          className="group relative flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-700 transition hover:shadow-md hover:scale-105 active:scale-95 cursor-pointer"
+          className="group relative flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-700 hover:shadow-md cursor-pointer"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
-          <FiHeart className="text-sm transition-transform duration-200 group-hover:scale-110" />
+          <FiHeart className="text-sm" />
           <span>{compareLabel}</span>
-        </button>
+        </motion.button>
       </div>
     </div>
   );
