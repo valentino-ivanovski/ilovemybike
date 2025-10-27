@@ -4,12 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { IoIosArrowDown } from "react-icons/io";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 import Link from "next/link";
-import { useEffect } from "react";
 import type { InStockBikeWithVariants } from "@/lib/types";
 import NewCard from "./NewCard";
 
@@ -18,50 +13,6 @@ type HeroSectionProps = {
 };
 
 export default function HeroSection({ popularBikes }: HeroSectionProps) {
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (window.innerWidth >= 768) return; // only on mobile
-
-    const sections = document.querySelectorAll("section");
-    let isAnimating = false;
-
-    sections.forEach((section, i) => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: "bottom top",
-        onLeave: () => {
-          if (!isAnimating && i < sections.length - 1) {
-            isAnimating = true;
-            gsap.to(window, {
-              duration: 1,
-              scrollTo: { y: sections[i + 1], offsetY: 0 },
-              onComplete: () => {
-                isAnimating = false;
-              },
-              ease: "power2.inOut",
-            });
-          }
-        },
-        onEnterBack: () => {
-          if (!isAnimating && i > 0) {
-            isAnimating = true;
-            gsap.to(window, {
-              duration: 1,
-              scrollTo: { y: sections[i - 1], offsetY: 0 },
-              onComplete: () => {
-                isAnimating = false;
-              },
-              ease: "power2.inOut",
-            });
-          }
-        },
-      });
-    });
-
-    return () => ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-  }, []);
 
   return (
     <>
