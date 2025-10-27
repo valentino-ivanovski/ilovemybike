@@ -135,7 +135,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
     <>
     <motion.section
       ref={heroRef}
-      className="relative z-0 h-[calc(100vh-54px-58px)] sm:h-[calc(100vh-48px-58px)] flex items-center justify-center overflow-hidden"
+      className="relative z-0 h-[calc(100vh-54px)] sm:h-[calc(100vh-48px)] flex items-center justify-center overflow-hidden"
       variants={heroVariants}
       initial="hidden"
       animate="visible"
@@ -246,7 +246,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
       </motion.div>
     </motion.section>
     <motion.section
-      className="block md:hidden h-[calc(100vh-54px-58px)] sm:h-[calc(100vh-48px-58px)]"
+      className="block md:hidden h-[calc(100vh-54px)] sm:h-[calc(100vh-48px)]"
       variants={heroVariants}
       initial="hidden"
       animate="visible"
