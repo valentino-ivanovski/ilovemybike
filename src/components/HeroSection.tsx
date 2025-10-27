@@ -9,36 +9,15 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { getPopularInStockBikes } from "@/lib/bikes";
+import { useEffect } from "react";
 import type { InStockBikeWithVariants } from "@/lib/types";
 import NewCard from "./NewCard";
 
-export default function HeroSection() {
-  const [popularBikes, setPopularBikes] = useState<InStockBikeWithVariants[]>([]);
+type HeroSectionProps = {
+  popularBikes: InStockBikeWithVariants[];
+};
 
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadBikes() {
-      try {
-        const bikes = await getPopularInStockBikes({
-          includeVariants: false,
-        });
-        if (isMounted) {
-          setPopularBikes(bikes);
-        }
-      } catch (error) {
-        console.error("Failed to fetch in-stock bikes", error);
-      }
-    }
-
-    loadBikes();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+export default function HeroSection({ popularBikes }: HeroSectionProps) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
