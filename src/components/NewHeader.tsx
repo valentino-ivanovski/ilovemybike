@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { FaHeart, FaShoppingCart, FaSearch, FaTimes } from "react-icons/fa";
 import "flag-icons/css/flag-icons.min.css";
 
@@ -23,18 +23,32 @@ const NewHeader = () => {
     setCartOpen(false);
   };
 
+  const barContainer: Variants = {
+    hidden: { opacity: 0, y: -12 },
+    show: { opacity: 1, y: 0, transition: { staggerChildren: 0.1, delayChildren: 0.1 } },
+  };
+
+  const barItem: Variants = {
+    hidden: { opacity: 0, y: -10 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } },
+  };
+
   return (
     <header className="sticky top-0 z-40 w-full h-[54px] sm:h-[48px] border-b border-gray-300 font-semibold text-black bg-gray-100 select-none">
       <nav className="w-full">
-        <div className="flex flex-row items-center justify-between px-6 2xl:px-20 transform translate-y-[15px] sm:translate-y-[12px]">
-          <Link href="/shop" className="text-sm  hover:underline cursor-pointer">
-            SHOP
-          </Link>
-          <div className="flex w-full flex-row justify-center">
-            <motion.svg
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={barContainer}
+          className="flex flex-row items-center justify-between px-6 2xl:px-20 transform translate-y-[15px] sm:translate-y-[12px]"
+        >
+          <motion.div variants={barItem}>
+            <Link href="/shop" className="text-sm cursor-pointer">
+              SHOP
+            </Link>
+          </motion.div>
+          <motion.div variants={barItem} className="flex w-full flex-row justify-center">
+            <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 512 512"
               className="h-[1.5em] w-[1.5em] cursor-pointer align-middle cursor-pointer"
@@ -47,19 +61,21 @@ const NewHeader = () => {
                 </linearGradient>
               </defs>
               <path d="M462.3 62.6C407.5 15.9 326 24.3 275.7 76.2L256 96.5l-19.7-20.3C186.1 24.3 104.5 15.9 49.7 62.6c-62.8 53.6-66.1 149.8-9.9 207.9l193.5 199.8c12.5 12.9 32.8 12.9 45.3 0l193.5-199.8c56.3-58.1 53-154.3-9.8-207.9z" />
-            </motion.svg>
-          </div>
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            aria-label="Open menu"
-            aria-controls="site-menu-drawer"
-            aria-expanded={isMenuOpen}
-            className="text-sm font-semibold hover:underline cursor-pointer"
-          >
-            MENU
-          </button>
-        </div>
+            </svg>
+          </motion.div>
+          <motion.div variants={barItem}>
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
+              aria-controls="site-menu-drawer"
+              aria-expanded={isMenuOpen}
+              className="text-sm font-semibold cursor-pointer"
+            >
+              MENU
+            </button>
+          </motion.div>
+        </motion.div>
       </nav>
 
       <AnimatePresence>
@@ -98,7 +114,7 @@ const NewHeader = () => {
                   </div>
                   <div className="text-sm font-extrabold tracking-wide text-gray-900">BIKE</div>
                 </div>
-                <button aria-label="Close menu" onClick={closeAllMenus} className="rounded-md p-2 hover:bg-gray-100">
+                <button aria-label="Close menu" onClick={closeAllMenus} className="rounded-md p-2">
                   <FaTimes className="text-xl text-gray-700" />
                 </button>
               </div>
@@ -117,7 +133,7 @@ const NewHeader = () => {
               <div className="border-b p-4">
                 <div className="flex items-stretch gap-3">
                   <button
-                    className="relative flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-3 transition hover:bg-gray-50 hover:shadow-sm active:scale-95"
+                    className="relative flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-3"
                     onClick={() => setFavOpen(true)}
                   >
                     <FaHeart className="text-xl text-yellow-500" />
@@ -129,7 +145,7 @@ const NewHeader = () => {
                     <span className="text-xs text-gray-700">Favorites</span>
                   </button>
                   <button
-                    className="relative flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-3 transition hover:bg-gray-50 hover:shadow-sm active:scale-95"
+                    className="relative flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-3"
                     onClick={() => setCartOpen(true)}
                   >
                     <FaShoppingCart className="text-xl text-gray-700" />
@@ -146,14 +162,14 @@ const NewHeader = () => {
                   <div className="mb-2 text-xs font-medium text-gray-500">Language</div>
                   <div className="grid grid-cols-2 gap-3">
                     <button
-                      className={`flex items-center justify-center gap-2 rounded-md border p-2 ${lang === "en" ? "border-gray-900 bg-gray-50" : "border-gray-200 hover:bg-gray-50"}`}
+                      className={`flex items-center justify-center gap-2 rounded-md border p-2 ${lang === "en" ? "border-gray-900 bg-gray-50" : "border-gray-200"}`}
                       onClick={() => setLang("en")}
                     >
                       <span className="fi fi-gb rounded-[4px]" />
                       <span className="text-sm">English</span>
                     </button>
                     <button
-                      className={`flex items-center justify-center gap-2 rounded-md border p-2 ${lang === "el" ? "border-gray-900 bg-gray-50" : "border-gray-200 hover:bg-gray-50"}`}
+                      className={`flex items-center justify-center gap-2 rounded-md border p-2 ${lang === "el" ? "border-gray-900 bg-gray-50" : "border-gray-200"}`}
                       onClick={() => setLang("el")}
                     >
                       <span className="fi fi-gr rounded-[4px]" />
@@ -166,19 +182,19 @@ const NewHeader = () => {
               <nav className="flex flex-col gap-3 p-4 text-gray-700">
                 <a
                   href="/"
-                  className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium transition hover:bg-gray-100"
+                  className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium"
                 >
                   Home
                 </a>
                 <a
                   href="/shop"
-                  className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium transition hover:bg-gray-100"
+                  className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium"
                 >
                   Shop
                 </a>
                 <a
                   href="/contact"
-                  className="group inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium transition hover:bg-gray-100"
+                  className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium"
                 >
                   Contact
                 </a>

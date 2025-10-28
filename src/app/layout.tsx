@@ -22,6 +22,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Preload hero video early so it starts immediately */}
+        <link
+          rel="preload"
+          as="video"
+          href="/videos/3.webm"
+          type="video/webm"
+          crossOrigin="anonymous"
+          fetchPriority="high"
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

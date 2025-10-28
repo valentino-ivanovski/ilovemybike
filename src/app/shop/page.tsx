@@ -111,3 +111,8 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     </div>
   )
 }
+
+// Ensure this route always renders on the server at request time
+// so shop data stays up to date and isn't statically cached.
+export const dynamic = "force-dynamic"
+export const revalidate = 0

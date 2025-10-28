@@ -120,7 +120,8 @@ export default function NewCard({
             alt={title}
             fill
             className="object-contain"
-            priority
+            loading="lazy"
+            fetchPriority="low"
           />
 
       </div>

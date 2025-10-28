@@ -1,13 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { IoIosArrowDown } from "react-icons/io";
 import Link from "next/link";
 import type { InStockBikeWithVariants } from "@/lib/types";
 import NewCard from "./NewCard";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 
 type HeroSectionProps = {
@@ -17,6 +17,16 @@ type HeroSectionProps = {
 export default function HeroSection({ popularBikes }: HeroSectionProps) {
   const desktopScrollRef = useRef<HTMLDivElement | null>(null);
   const mobileScrollRef = useRef<HTMLDivElement | null>(null);
+
+  const quotes = [
+    "One of the best e-bikes available at any price and far and away my favourite ride of the year.",
+    "A perfect balance of performance and comfort — a ride that feels effortless.",
+    "This e-bike redefines what's possible. Smooth, powerful, and genuinely exciting."
+  ];
+  const [quoteIndex, setQuoteIndex] = useState(0);
+  const cycleQuote = (direction: 1 | -1) => {
+    setQuoteIndex((prev) => (prev + direction + quotes.length) % quotes.length);
+  };
 
   // Smooth horizontal scrolling for wheel/trackpad input using GSAP
   useEffect(() => {
@@ -50,7 +60,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
         const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + magnitude * SPEED));
         gsap.to(el, {
           duration: 0.45,
-          ease: "power3.out",
+          ease: "power4.out",
           scrollLeft: target,
         });
       };
@@ -112,21 +122,35 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
           <motion.div variants={fadeUpDelayed} className="relative h-[130%] md:h-1/2 overflow-hidden">
             <video
               className="absolute inset-0 w-full h-full object-cover"
-              src="/videos/3.webm"
               autoPlay
               loop
               muted
               playsInline
               preload="auto"
-            />
-            <motion.span variants={fadeUpDelayed} className="absolute inset-0 flex items-end justify-center md:items-end md:justify-start text-left text-3xl sm:text-4xl font-regular text-white pl-4 pb-8 sm:pl-4 sm:pb-4 sm:max-w-lg">
-              "One of the best e-bikes available at any price and far and away my favourite ride of the year".
-            </motion.span>
+              crossOrigin="anonymous"
+              style={{ display: "block" }}
+            >
+              <source src="/videos/3.webm" type="video/webm" />
+              {/* Fallback text if the browser cannot play the video */}
+              Your browser does not support the video tag.
+            </video>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={quoteIndex}
+                initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -10, filter: "blur(6px)" }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 flex items-end justify-center md:items-end md:justify-start text-left text-3xl sm:text-4xl font-regular text-white pl-4 pb-8 sm:pl-4 sm:pb-4 sm:max-w-lg"
+              >
+                {quotes[quoteIndex]}
+              </motion.span>
+            </AnimatePresence>
             <motion.div variants={fadeUpDelayed} className="absolute top-4 right-4 flex gap-2">
-              <button onClick={() => nudgeDesktop(-1)} className="flex items-center justify-center w-8 h-8 bg-transparent border border-white rounded-full cursor-pointer">
+              <button onClick={() => cycleQuote(-1)} className="flex items-center justify-center w-8 h-8 bg-transparent border border-white rounded-full cursor-pointer hover:bg-white/10">
                 <IoIosArrowDown className="rotate-90 mr-[3px] text-2xl text-white" />
               </button>
-              <button onClick={() => nudgeDesktop(1)} className="flex items-center justify-center w-8 h-8 bg-transparent rounded-full border border-white cursor-pointer">
+              <button onClick={() => cycleQuote(1)} className="flex items-center justify-center w-8 h-8 bg-transparent rounded-full border border-white cursor-pointer hover:bg-white/10">
                 <IoIosArrowDown className="-rotate-90 ml-[3px] text-2xl text-white" />
               </button>
             </motion.div>

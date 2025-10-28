@@ -69,3 +69,8 @@ export default async function BikePage({ params, searchParams }: BikePageProps) 
     </div>
   )
 }
+
+// Force this page to render on the server for each request
+// to always show current inventory/pricing/variants.
+export const dynamic = "force-dynamic"
+export const revalidate = 0
