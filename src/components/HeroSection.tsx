@@ -37,6 +37,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
 
         // Translate vertical wheel to horizontal movement
         const magnitude = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+        const SPEED = 5; // speed multiplier for a snappier feel
 
         if (magnitude === 0) return;
 
@@ -46,9 +47,9 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
         // Kill any ongoing tween for snappy responsiveness
         gsap.killTweensOf(el);
 
-        const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + magnitude));
+        const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + magnitude * SPEED));
         gsap.to(el, {
-          duration: 0.6,
+          duration: 0.45,
           ease: "power3.out",
           scrollLeft: target,
         });
@@ -68,10 +69,10 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
     if (!el) return;
     const maxScroll = el.scrollWidth - el.clientWidth;
     if (maxScroll <= 0) return;
-    const amount = Math.max(200, Math.round(el.clientWidth * 0.6));
+    const amount = Math.max(260, Math.round(el.clientWidth * 0.75));
     const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + direction * amount));
     gsap.killTweensOf(el);
-    gsap.to(el, { duration: 0.6, ease: "power3.out", scrollLeft: target });
+    gsap.to(el, { duration: 0.45, ease: "power3.out", scrollLeft: target });
   };
 
   return (

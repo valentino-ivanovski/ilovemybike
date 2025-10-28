@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { ComponentPropsWithoutRef } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 type NewCardProps = ComponentPropsWithoutRef<"div"> & {
   id: string;
@@ -33,7 +34,8 @@ export default function NewCard({
   className = "",
   ...rest
 }: NewCardProps) {
-  const { addToFavorites } = useCart();
+  const { addToFavorites, removeFromFavorites, isInFavorites } = useCart();
+  const [isFav, setIsFav] = useState(false);
   const priceFormatter = new Intl.NumberFormat("de-DE", {
     style: "currency",
     currency: "EUR",
@@ -42,7 +44,16 @@ export default function NewCard({
 
   const formattedPrice = priceFormatter.format(price);
 
-  const handleAddToFavorites = () => {
+  useEffect(() => {
+    setIsFav(isInFavorites(id));
+  }, [id, isInFavorites]);
+
+  const handleToggleFavorite = () => {
+    if (isFav) {
+      removeFromFavorites(id);
+      setIsFav(false);
+      return;
+    }
     addToFavorites({
       id,
       name: title,
@@ -52,6 +63,7 @@ export default function NewCard({
       description,
       image: imageSrc,
     });
+    setIsFav(true);
   };
 
   return (
@@ -95,13 +107,19 @@ export default function NewCard({
         </p>
         <motion.button
           type="button"
-          onClick={handleAddToFavorites}
+          onClick={handleToggleFavorite}
+          aria-pressed={isFav}
+          aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
           className="group relative flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-700 hover:shadow-md cursor-pointer"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
-          <FiHeart className="text-sm" />
+          {isFav ? (
+            <FiHeart className="text-sm text-red-500 fill-red-500" />
+          ) : (
+            <FiHeart className="text-sm text-slate-600" />
+          )}
           <span>{compareLabel}</span>
         </motion.button>
       </div>
