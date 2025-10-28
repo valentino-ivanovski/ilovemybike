@@ -7,12 +7,72 @@ import { IoIosArrowDown } from "react-icons/io";
 import Link from "next/link";
 import type { InStockBikeWithVariants } from "@/lib/types";
 import NewCard from "./NewCard";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
 
 type HeroSectionProps = {
   popularBikes: InStockBikeWithVariants[];
 };
 
 export default function HeroSection({ popularBikes }: HeroSectionProps) {
+  const desktopScrollRef = useRef<HTMLDivElement | null>(null);
+  const mobileScrollRef = useRef<HTMLDivElement | null>(null);
+
+  // Smooth horizontal scrolling for wheel/trackpad input using GSAP
+  useEffect(() => {
+    const containers = [desktopScrollRef.current, mobileScrollRef.current].filter(
+      Boolean
+    ) as HTMLDivElement[];
+
+    const listeners: Array<{
+      el: HTMLDivElement;
+      handler: (e: WheelEvent) => void;
+    }> = [];
+
+    containers.forEach((el) => {
+      const handler = (e: WheelEvent) => {
+        // Only apply when horizontal scrolling is possible
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        if (maxScroll <= 0) return;
+
+        // Translate vertical wheel to horizontal movement
+        const magnitude = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+
+        if (magnitude === 0) return;
+
+        // Prevent default vertical page scroll while interacting with the grid
+        e.preventDefault();
+
+        // Kill any ongoing tween for snappy responsiveness
+        gsap.killTweensOf(el);
+
+        const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + magnitude));
+        gsap.to(el, {
+          duration: 0.6,
+          ease: "power3.out",
+          scrollLeft: target,
+        });
+      };
+
+      el.addEventListener("wheel", handler, { passive: false });
+      listeners.push({ el, handler });
+    });
+
+    return () => {
+      listeners.forEach(({ el, handler }) => el.removeEventListener("wheel", handler));
+    };
+  }, []);
+
+  const nudgeDesktop = (direction: 1 | -1) => {
+    const el = desktopScrollRef.current;
+    if (!el) return;
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    if (maxScroll <= 0) return;
+    const amount = Math.max(200, Math.round(el.clientWidth * 0.6));
+    const target = Math.max(0, Math.min(maxScroll, el.scrollLeft + direction * amount));
+    gsap.killTweensOf(el);
+    gsap.to(el, { duration: 0.6, ease: "power3.out", scrollLeft: target });
+  };
 
   return (
     <>
@@ -49,10 +109,10 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
               "One of the best e-bikes available at any price and far and away my favourite ride of the year".
             </span>
             <div className="absolute top-4 right-4 flex gap-2">
-              <button className="flex items-center justify-center w-8 h-8 bg-transparent border border-white rounded-full hover:bg-black/50 transition cursor-pointer">
+              <button onClick={() => nudgeDesktop(-1)} className="flex items-center justify-center w-8 h-8 bg-transparent border border-white rounded-full hover:bg-black/50 transition cursor-pointer">
                 <IoIosArrowDown className="rotate-90 mr-[3px] text-2xl text-white" />
               </button>
-              <button className="flex items-center justify-center w-8 h-8 bg-transparent rounded-full border border-white hover:bg-black/50 transition cursor-pointer">
+              <button onClick={() => nudgeDesktop(1)} className="flex items-center justify-center w-8 h-8 bg-transparent rounded-full border border-white hover:bg-black/50 transition cursor-pointer">
                 <IoIosArrowDown className="-rotate-90 ml-[3px] text-2xl text-white" />
               </button>
             </div>
@@ -63,7 +123,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
         <div className="hidden md:block w-full sm:w-1/2 h-full bg-white flex flex-col">
           <div className="div3 hidden md:flex h-full bg-slate-100">
             {popularBikes.length > 0 ? (
-              <div className="flex h-full w-full overflow-x-auto scrollbar-hide overflow-x-scroll [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div ref={desktopScrollRef} className="flex h-full w-full overflow-x-auto scrollbar-hide overflow-x-scroll [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 <div className="grid h-full min-w-full grid-flow-col grid-rows-2 gap-0 auto-cols-[minmax(300px,1fr)]">
                   {popularBikes.map((bike) => {
                     const coverImage = bike.images[0] || "/images/3.webp";
@@ -100,7 +160,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
       <div className="w-full h-full md:w-1/2 bg-white flex flex-col">
         <div className="div3 flex md:hidden h-full bg-slate-100">
           {popularBikes.length > 0 ? (
-            <div className="flex h-full w-full overflow-x-auto scrollbar-hide overflow-x-scroll [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div ref={mobileScrollRef} className="flex h-full w-full overflow-x-auto scrollbar-hide overflow-x-scroll [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <div className="grid h-full min-w-full grid-flow-col grid-rows-2 gap-0 auto-cols-[minmax(300px,1fr)]">
                 {popularBikes.map((bike) => {
                   const coverImage = bike.images[0] || "/images/3.webp";
