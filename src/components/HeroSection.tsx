@@ -140,6 +140,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
                         price={price}
                         category={bike.category}
                         subcategory={subcategory}
+                        section="in-stock"
                         popular={bike.popular ? "Popular" : undefined}
                         imageSrc={coverImage}
                         className="h-full"
@@ -168,19 +169,20 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
                   const price = bike.new_price ?? bike.old_price;
                   const subcategory = bike.subcategories[0];
                   return (
-                    <NewCard
-                      key={bike.id}
-                      id={String(bike.id)}
-                      title={bike.title}
-                      brand={bike.brand}
-                      description={bike.description}
-                      price={price}
-                      category={bike.category}
-                      subcategory={subcategory}
-                      popular={bike.popular ? "Popular" : undefined}
-                      imageSrc={coverImage}
-                      className="h-full"
-                    />
+                  <NewCard
+                    key={bike.id}
+                    id={String(bike.id)}
+                    title={bike.title}
+                    brand={bike.brand}
+                    description={bike.description}
+                    price={price}
+                    category={bike.category}
+                    subcategory={subcategory}
+                    section="in-stock"
+                    popular={bike.popular ? "Popular" : undefined}
+                    imageSrc={coverImage}
+                    className="h-full"
+                  />
                   );
                 })}
               </div>

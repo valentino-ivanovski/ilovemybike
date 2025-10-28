@@ -1,9 +1,11 @@
 import { FiHeart } from "react-icons/fi";
 import Image from "next/image";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, KeyboardEvent, MouseEvent } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import type { ShopSection } from "@/lib/types";
 
 type NewCardProps = ComponentPropsWithoutRef<"div"> & {
   id: string;
@@ -17,6 +19,7 @@ type NewCardProps = ComponentPropsWithoutRef<"div"> & {
   imageSrc: string;
   compareLabel?: string;
   ctaLabel?: string;
+  section?: ShopSection;
 };
 
 export default function NewCard({
@@ -31,11 +34,13 @@ export default function NewCard({
   imageSrc,
   compareLabel = "Favorites",
   ctaLabel = "Explore",
+  section = "in-stock",
   className = "",
   ...rest
 }: NewCardProps) {
   const { addToFavorites, removeFromFavorites, isInFavorites } = useCart();
   const [isFav, setIsFav] = useState(false);
+  const router = useRouter();
   const priceFormatter = new Intl.NumberFormat("de-DE", {
     style: "currency",
     currency: "EUR",
@@ -66,19 +71,35 @@ export default function NewCard({
     setIsFav(true);
   };
 
+  const navigateToBike = () => {
+    router.push(`/bike/${id}?section=${section}`);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      navigateToBike();
+    }
+  };
+
   return (
     <div
-      className={`flex h-full min-w-[300px] w-full flex-col border-r border-b border-slate-200 bg-white text-slate-900 ${className}`}
+      role="link"
+      tabIndex={0}
+      aria-label={`View details for ${title}`}
+      onClick={navigateToBike}
+      onKeyDown={handleKeyDown}
+      className={`flex h-full min-w-[300px] w-full flex-col border-r border-b border-slate-200 bg-white text-slate-900 cursor-pointer ${className}`}
       {...rest}
     >
       <div className="flex items-start justify-between gap-4 p-4 pb-2">
-        <div className="space-y-1 z-50">
+        <div className="space-y-1 z-10">
           <p className="text-md font-medium uppercase tracking-wide">{title}</p>
           {brand && (
             <p className="text-xs text-slate-500 uppercase tracking-wide">{brand}</p>
           )}
         </div>
-        <div className="z-50 text-right">
+        <div className="z-10 text-right">
           <p className="text-md font-regular">{formattedPrice}</p>
           {popular && (
             <span className="inline-block text-[10px] font-semibold uppercase tracking-wide text-emerald-600">
@@ -100,14 +121,15 @@ export default function NewCard({
 
       </div>
 
-      <div className="flex z-50 items-center justify-between px-4 pb-4 pt-2">
+      <div className="flex z-10 items-center justify-between px-4 pb-4 pt-2">
         <p className="text-xs text-slate-500">
           {category}
           {subcategory ? ` · ${subcategory}` : ""}
         </p>
         <motion.button
           type="button"
-          onClick={handleToggleFavorite}
+          onClick={(e: MouseEvent) => { e.stopPropagation(); handleToggleFavorite(); }}
+          onKeyDown={(e: KeyboardEvent) => e.stopPropagation()}
           aria-pressed={isFav}
           aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
           className="group relative flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-700 hover:shadow-md cursor-pointer"

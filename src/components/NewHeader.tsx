@@ -24,7 +24,7 @@ const NewHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full h-[54px] sm:h-[48px] border-b border-gray-300 font-semibold text-black bg-gray-100">
+    <header className="sticky top-0 z-40 w-full h-[54px] sm:h-[48px] border-b border-gray-300 font-semibold text-black bg-gray-100 select-none">
       <nav className="w-full">
         <div className="flex flex-row items-center justify-between px-6 2xl:px-20 transform translate-y-[15px] sm:translate-y-[12px]">
           <Link href="/shop" className="text-sm  hover:underline cursor-pointer">
@@ -75,7 +75,7 @@ const NewHeader = () => {
 
             <motion.aside
               id="site-menu-drawer"
-              className="fixed top-0 right-0 z-[60] flex h-full w-80 max-w-[85vw] flex-col bg-white shadow-xl"
+              className="fixed top-0 right-0 z-100 flex h-full w-80 max-w-[85vw] flex-col bg-white shadow-xl"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
