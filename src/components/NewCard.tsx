@@ -2,7 +2,7 @@ import { FiHeart } from "react-icons/fi";
 import Image from "next/image";
 import type { ComponentPropsWithoutRef, KeyboardEvent, MouseEvent } from "react";
 import { useCart } from "@/contexts/CartContext";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ShopSection } from "@/lib/types";
@@ -36,7 +36,6 @@ export default function NewCard({
   ctaLabel = "Explore",
   section = "in-stock",
   className = "",
-  ...rest
 }: NewCardProps) {
   const { addToFavorites, removeFromFavorites, isInFavorites } = useCart();
   const [isFav, setIsFav] = useState(false);
@@ -82,15 +81,20 @@ export default function NewCard({
     }
   };
 
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: 24 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120, damping: 18, mass: 0.6 } },
+  };
+
   return (
-    <div
+    <motion.div
+      variants={cardVariants}
       role="link"
       tabIndex={0}
       aria-label={`View details for ${title}`}
       onClick={navigateToBike}
       onKeyDown={handleKeyDown}
       className={`flex h-full min-w-[300px] w-full flex-col border-r border-b border-slate-200 bg-white text-slate-900 cursor-pointer ${className}`}
-      {...rest}
     >
       <div className="flex items-start justify-between gap-4 p-4 pb-2">
         <div className="space-y-1 z-10">
@@ -126,16 +130,13 @@ export default function NewCard({
           {category}
           {subcategory ? ` · ${subcategory}` : ""}
         </p>
-        <motion.button
+        <button
           type="button"
           onClick={(e: MouseEvent) => { e.stopPropagation(); handleToggleFavorite(); }}
           onKeyDown={(e: KeyboardEvent) => e.stopPropagation()}
           aria-pressed={isFav}
           aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
-          className="group relative flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-700 hover:shadow-md cursor-pointer"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="group relative flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-700 cursor-pointer"
         >
           {isFav ? (
             <FiHeart className="text-sm text-red-500 fill-red-500" />
@@ -143,8 +144,8 @@ export default function NewCard({
             <FiHeart className="text-sm text-slate-600" />
           )}
           <span>{compareLabel}</span>
-        </motion.button>
+        </button>
       </div>
-    </div>
+    </motion.div>
   );
 }
