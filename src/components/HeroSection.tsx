@@ -279,7 +279,7 @@ const fadeUpDelayed: Variants = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { type: "spring", stiffness: 140, damping: 26, duration: 0.8, delay: 0.5 },
+    transition: { type: "spring", stiffness: 140, damping: 26, duration: 0.8, delay: 0.4 },
   },
 };
 
@@ -288,11 +288,11 @@ const rightPanel: Variants = {
   show: {
     opacity: 1,
     x: 0,
-    transition: { type: "spring", stiffness: 130, damping: 28, duration: 0.8, delay:0.8 },
+    transition: { type: "spring", stiffness: 130, damping: 28, duration: 0.8, delay:0.3 },
   },
 };
 
 const cardsStagger: Variants = {
   hidden: {},
-  show: { transition: { staggerChildren: 0, delayChildren: 0 } },
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.3 } },
 };
