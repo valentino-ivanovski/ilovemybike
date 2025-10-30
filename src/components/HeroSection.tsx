@@ -296,3 +296,6 @@ const cardsStagger: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08, delayChildren: 0.3 } },
 };
+ 
+
+//dsfa i did absolutely nothing today but hery lets commit something cause i need it for the chart
