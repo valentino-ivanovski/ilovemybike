@@ -257,3 +257,5 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
   </>
   );
 }
+
+//dsfa i did absolutely nothing today but hery lets commit something cause i need it for the chart
