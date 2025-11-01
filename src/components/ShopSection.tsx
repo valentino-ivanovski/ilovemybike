@@ -106,69 +106,17 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
       <div className="w-full h-full flex flex-col md:flex-row">
         
         {/* Left Side */}
-        <motion.div variants={sideReveal} className="w-full h-full md:w-1/2 bg-gray-100 border-r flex flex-col">
+        <motion.div variants={sideReveal} className="w-full h-full md:w-1/4  bg-gray-100 border-r flex flex-col">
           
-          {/* Top Left */}
+          {/* Left */}
           <div className="relative w-full h-full md:h-1/2">
             <motion.div variants={stackContainer} className="div1 relative h-full w-full">
-              <div className="absolute top-4 left-4 md:top-4 sm:left-4">
-                <motion.span variants={lineItem} className="block text-6xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl 3xl:text-8xl font-regular">
-                  We create
-                </motion.span>
-                <motion.span variants={lineItem} className="block text-6xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl 3xl:text-8xl font-regular">
-                  New ways
-                </motion.span>
-                <motion.span variants={lineItem} className="block text-6xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl 3xl:text-8xl font-regular">
-                  To move.
-                </motion.span>
-              </div>
-              <motion.span variants={fadeUp} className="absolute bottom-4 right-4 text-sm sm:text-lg leading-tight text-right text-gray-500">
-                Located in <br /> Argostoli, <br /> Available <br /> around Greece
-              </motion.span>
             </motion.div>
           </div>
-
-          {/* Bottom Left */}
-          <motion.div variants={fadeUpDelayed} className="relative h-[130%] md:h-1/2 overflow-hidden">
-            <video
-              className="absolute inset-0 w-full h-full object-cover"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              crossOrigin="anonymous"
-              style={{ display: "block" }}
-            >
-              <source src="/videos/3.webm" type="video/webm" />
-              {/* Fallback text if the browser cannot play the video */}
-              Your browser does not support the video tag.
-            </video>
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={quoteIndex}
-                initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -10, filter: "blur(6px)" }}
-                transition={{ duration: 0.2 }}
-                className="absolute inset-0 flex items-end justify-center md:items-end md:justify-start text-left text-3xl sm:text-4xl font-regular text-white pl-4 pb-8 sm:pl-4 sm:pb-4 sm:max-w-lg"
-              >
-                {quotes[quoteIndex]}
-              </motion.span>
-            </AnimatePresence>
-            <motion.div variants={fadeUpDelayed} className="absolute top-4 right-4 flex gap-2">
-              <button onClick={() => cycleQuote(-1)} className="flex items-center justify-center w-8 h-8 bg-transparent border border-white rounded-full cursor-pointer hover:bg-white/10">
-                <IoIosArrowDown className="rotate-90 mr-[3px] text-2xl text-white" />
-              </button>
-              <button onClick={() => cycleQuote(1)} className="flex items-center justify-center w-8 h-8 bg-transparent rounded-full border border-white cursor-pointer hover:bg-white/10">
-                <IoIosArrowDown className="-rotate-90 ml-[3px] text-2xl text-white" />
-              </button>
-            </motion.div>
-          </motion.div>
         </motion.div>
 
         {/* Right Side */}
-        <motion.div variants={sideReveal} className="hidden md:block w-full sm:w-1/2 h-full bg-white flex flex-col">
+        <motion.div variants={sideReveal} className="hidden md:block w-full sm:w-3/4 h-full bg-white flex flex-col">
           <div className="div3 hidden md:flex h-full bg-slate-100">
             {popularBikes.length > 0 ? (
               <motion.div
