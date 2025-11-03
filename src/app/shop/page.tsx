@@ -1,18 +1,22 @@
 import NewHeader from "@/components/NewHeader"
 import ShopSection from "@/components/ShopSection"
 import Footer from "@/components/Footer"
-import { getPopularInStockBikes } from "@/lib/bikes";
+import { getInStockBikes } from "@/lib/bikes";
 
 export default async function ShopPage() {
-
-  const popularBikes = await getPopularInStockBikes({
-      includeVariants: false,
-    });
+  const initialPageData = await getInStockBikes(
+    {
+      sortBy: "title",
+      sortOrder: "asc",
+      page: 1,
+    },
+    { includeVariants: false }
+  );
 
   return (
     <>
       <NewHeader />
-      <ShopSection popularBikes={popularBikes} />
+      <ShopSection initialPageData={initialPageData} />
       <Footer />
     </>
   )

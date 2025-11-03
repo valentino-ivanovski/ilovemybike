@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { IoIosArrowDown } from "react-icons/io";
 import Link from "next/link";
-import type { InStockBikeWithVariants } from "@/lib/types";
+import type { InStockBikeWithVariants, PaginatedBikes } from "@/lib/types";
+import { getInStockBikes, getInStockCategories, getInStockSubcategories } from "@/lib/bikes";
 import NewCard from "./NewCard";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
@@ -22,10 +23,10 @@ import {
 } from "@/animations/shopVariants";
 
 type HeroSectionProps = {
-  popularBikes: InStockBikeWithVariants[];
+  initialPageData: PaginatedBikes<InStockBikeWithVariants>;
 };
 
-export default function HeroSection({ popularBikes }: HeroSectionProps) {
+export default function HeroSection({ initialPageData }: HeroSectionProps) {
   const desktopScrollRef = useRef<HTMLDivElement | null>(null);
   const mobileScrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -41,12 +42,86 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
 
   const [selectedTab, setSelectedTab] = useState<"in-stock" | "order">("in-stock");
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [pageData, setPageData] = useState<PaginatedBikes<InStockBikeWithVariants>>(initialPageData);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number>(initialPageData?.page ?? 1);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [showCategoryList, setShowCategoryList] = useState(false);
+  const [subcategories, setSubcategories] = useState<string[]>([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | undefined>(undefined);
+  const [showSubcategoryList, setShowSubcategoryList] = useState(false);
 
   const toggleBrand = (brand: string) => {
     setSelectedBrands((prev) =>
       prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
     );
   };
+
+  // Load a specific page of in-stock bikes
+  const loadPage = async (page: number) => {
+    try {
+      setLoading(true);
+      const data = await getInStockBikes(
+        {
+          sortBy: "title",
+          sortOrder: "asc",
+          page,
+          category: selectedCategory,
+          subcategory: selectedSubcategory,
+        },
+        { includeVariants: false }
+      );
+      setPageData(data);
+      setCurrentPage(data.page);
+      // Reset scroll position to start on page change
+      const els = [desktopScrollRef.current, mobileScrollRef.current].filter(Boolean) as HTMLDivElement[];
+      els.forEach((el) => {
+        gsap.killTweensOf(el);
+        gsap.to(el, { duration: 0.35, ease: "power3.out", scrollLeft: 0 });
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load categories once
+  useEffect(() => {
+    (async () => {
+      try {
+        const list = await getInStockCategories();
+        setCategories(list);
+      } catch (e) {
+        // ignore
+      }
+    })();
+  }, []);
+
+  // When category changes, refresh subcategories and reset page
+  useEffect(() => {
+    (async () => {
+      try {
+        setSelectedSubcategory(undefined);
+        if (selectedCategory) {
+          const subs = await getInStockSubcategories(selectedCategory);
+          setSubcategories(subs);
+        } else {
+          setSubcategories([]);
+        }
+      } finally {
+        // noop
+      }
+    })();
+    // Refresh list to page 1 on category change
+    loadPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory]);
+
+  // When subcategory changes, refresh list to page 1
+  useEffect(() => {
+    loadPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSubcategory]);
 
   // Smooth horizontal scrolling for wheel/trackpad input using GSAP
   useEffect(() => {
@@ -148,14 +223,81 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
               
             </div>
               
-            <div className="w-full bg-white border-b border-slate-200 h-[48px] flex items-center pl-[23px] relative text-sm select-none cursor-pointer">
-              <span>CATEGORY</span>
-              <IoIosArrowDown className="absolute right-[20px] text-black/60" />
+            <div className="relative">
+              <button
+                onClick={() => setShowCategoryList((s) => !s)}
+                className="w-full bg-white border-b border-slate-200 h-[48px] flex items-center pl-[23px] relative text-sm select-none cursor-pointer text-left"
+              >
+                <span>{selectedCategory ? `CATEGORY: ${selectedCategory}` : "CATEGORY"}</span>
+                <IoIosArrowDown className="absolute right-[20px] text-black/60" />
+              </button>
+              {showCategoryList && (
+                <div className="absolute left-0 right-0 top-full z-30 bg-white border border-slate-200 shadow-lg rounded-md mt-[1px] max-h-48 overflow-y-auto">
+                  {categories.length === 0 ? (
+                    <div className="text-xs text-black/60 p-3">Loading categories...</div>
+                  ) : (
+                    <>
+                      <button
+                        className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 ${!selectedCategory ? "bg-gray-100" : ""}`}
+                        onClick={() => {
+                          setSelectedCategory(undefined);
+                          setShowCategoryList(false);
+                        }}
+                      >
+                        All categories
+                      </button>
+                      {categories.map((cat) => (
+                        <button
+                          key={cat}
+                          className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 ${selectedCategory === cat ? "bg-gray-100" : ""}`}
+                          onClick={() => {
+                            setSelectedCategory(cat);
+                            setShowCategoryList(false);
+                          }}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
-            <div className="w-full bg-white border-b border-slate-200 h-[48px] flex items-center pl-[23px] relative text-sm select-none cursor-pointer">
-              <span>SUBCATEGORY</span>
-              <IoIosArrowDown className="absolute right-[20px] text-black/60" />
-            </div>  
+            <div className="relative">
+              <button
+                onClick={() => setShowSubcategoryList((s) => !s)}
+                className="w-full bg-white border-b border-slate-200 h-[48px] flex items-center pl-[23px] relative text-sm select-none cursor-pointer text-left disabled:opacity-50"
+                disabled={subcategories.length === 0}
+              >
+                <span>{selectedSubcategory ? `SUBCATEGORY: ${selectedSubcategory}` : "SUBCATEGORY"}</span>
+                <IoIosArrowDown className="absolute right-[20px] text-black/60" />
+              </button>
+              {showSubcategoryList && (
+                <div className="absolute left-0 right-0 top-full z-30 bg-white border border-slate-200 shadow-lg rounded-md mt-[1px] max-h-48 overflow-y-auto">
+                  <button
+                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 ${!selectedSubcategory ? "bg-gray-100" : ""}`}
+                    onClick={() => {
+                      setSelectedSubcategory(undefined);
+                      setShowSubcategoryList(false);
+                    }}
+                  >
+                    All subcategories
+                  </button>
+                  {subcategories.map((sub) => (
+                    <button
+                      key={sub}
+                      className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 ${selectedSubcategory === sub ? "bg-gray-100" : ""}`}
+                      onClick={() => {
+                        setSelectedSubcategory(sub);
+                        setShowSubcategoryList(false);
+                      }}
+                    >
+                      {sub}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="h-[97px] w-full grid grid-cols-2 border-b border-slate-200">
               <button
@@ -189,7 +331,32 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
 
           {/* Left DOWN */}
           <div className="relative w-full h-full md:h-1/2 bg-black">
-            <motion.div variants={stackContainer} className="div1 relative h-full w-full bg-blue-300">
+            <motion.div variants={stackContainer} className="div1 relative h-full w-full bg-gray-500">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4">
+                <div className="text-white text-xs tracking-wide">
+                  Page {pageData.page} of {pageData.totalPages}
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => loadPage(Math.max(1, pageData.page - 1))}
+                    disabled={loading || pageData.page <= 1}
+                    className={`px-3 py-2 text-xs rounded-md border border-white/30 text-white transition ${
+                      pageData.page <= 1 || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
+                    }`}
+                  >
+                    Prev
+                  </button>
+                  <button
+                    onClick={() => loadPage(Math.min(pageData.totalPages, pageData.page + 1))}
+                    disabled={loading || pageData.page >= pageData.totalPages}
+                    className={`px-3 py-2 text-xs rounded-md border border-white/30 text-white transition ${
+                      pageData.page >= pageData.totalPages || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
+                    }`}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </div>
         </motion.div>
@@ -197,7 +364,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
         {/* Right Side */}
         <motion.div variants={sideReveal} className="hidden md:block w-full sm:w-3/4 h-full bg-white flex flex-col">
           <div className="div3 hidden md:flex h-full bg-slate-100">
-            {popularBikes.length > 0 ? (
+            {pageData.bikes.length > 0 ? (
               <motion.div
                 ref={desktopScrollRef}
                 initial="hidden"
@@ -205,8 +372,8 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
                 variants={rightPanel}
                 className="flex h-full w-full overflow-x-auto scrollbar-hide overflow-x-scroll [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               >
-                <motion.div variants={cardsStagger} className="grid h-full min-w-full grid-flow-col grid-rows-2 gap-0 auto-cols-[minmax(300px,1fr)]">
-                  {popularBikes.map((bike) => {
+                <motion.div variants={cardsStagger} className="grid h-full min-w-full grid-flow-col grid-rows-2 gap-0 auto-cols-[minmax(300px,300px)]">
+                  {pageData.bikes.map((bike) => {
                     const coverImage = bike.images[0] || "/images/3.webp";
                     const price = bike.new_price ?? bike.old_price;
                     const subcategory = bike.subcategories[0];
@@ -231,7 +398,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
               </motion.div>
             ) : (
               <div className="flex h-full w-full items-center justify-center text-sm text-gray-500">
-                Loading popular bikes...
+                {loading ? "Loading in-stock bikes..." : "No bikes found."}
               </div>
             )}
           </div>
@@ -241,7 +408,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
     <motion.section initial="hidden" animate="show" variants={pageVariants} className="block md:hidden h-[calc(100vh-0px)]">
       <div className="w-full h-full md:w-1/2 bg-white flex flex-col">
         <div className="div3 flex md:hidden h-full bg-slate-100">
-          {popularBikes.length > 0 ? (
+          {pageData.bikes.length > 0 ? (
             <motion.div
               ref={mobileScrollRef}
               initial="hidden"
@@ -249,8 +416,8 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
               variants={rightPanel}
               className="flex h-full w-full overflow-x-auto scrollbar-hide overflow-x-scroll [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              <motion.div variants={cardsStagger} className="grid h-full min-w-full grid-flow-col grid-rows-2 gap-0 auto-cols-[minmax(300px,1fr)]">
-                {popularBikes.map((bike) => {
+              <motion.div variants={cardsStagger} className="grid h-full min-w-full grid-flow-col grid-rows-2 gap-0 auto-cols-[minmax(300px,300px)]">
+                {pageData.bikes.map((bike) => {
                   const coverImage = bike.images[0] || "/images/3.webp";
                   const price = bike.new_price ?? bike.old_price;
                   const subcategory = bike.subcategories[0];
@@ -275,7 +442,7 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
             </motion.div>
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-gray-500">
-              Loading popular bikes...
+              {loading ? "Loading in-stock bikes..." : "No bikes found."}
             </div>
           )}
         </div>

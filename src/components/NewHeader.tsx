@@ -34,7 +34,7 @@ const NewHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full h-[54px] sm:h-[48px] border-b border-gray-300 font-semibold text-black bg-gray-100 select-none">
+    <header className="sticky top-0 z-40 w-full h-[54px] sm:h-[48px] border-b border-slate-200 font-medium text-black bg-gray-100 select-none">
       <nav className="w-full">
         <motion.div
           initial="hidden"
@@ -70,7 +70,7 @@ const NewHeader = () => {
               aria-label="Open menu"
               aria-controls="site-menu-drawer"
               aria-expanded={isMenuOpen}
-              className="text-sm font-semibold cursor-pointer"
+              className="text-sm font-medium cursor-pointer"
             >
               MENU
             </button>
@@ -133,7 +133,7 @@ const NewHeader = () => {
               <div className="border-b p-4">
                 <div className="flex items-stretch gap-3">
                   <button
-                    className="relative flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-3"
+                    className="relative flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white p-3"
                     onClick={() => setFavOpen(true)}
                   >
                     <FaHeart className="text-xl text-yellow-500" />
@@ -145,7 +145,7 @@ const NewHeader = () => {
                     <span className="text-xs text-gray-700">Favorites</span>
                   </button>
                   <button
-                    className="relative flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-3"
+                    className="relative flex flex-1 flex-col items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white p-3"
                     onClick={() => setCartOpen(true)}
                   >
                     <FaShoppingCart className="text-xl text-gray-700" />
@@ -162,14 +162,14 @@ const NewHeader = () => {
                   <div className="mb-2 text-xs font-medium text-gray-500">Language</div>
                   <div className="grid grid-cols-2 gap-3">
                     <button
-                      className={`flex items-center justify-center gap-2 rounded-md border p-2 ${lang === "en" ? "border-gray-900 bg-gray-50" : "border-gray-200"}`}
+                      className={`flex items-center justify-center gap-2 rounded-md border p-2 ${lang === "en" ? "border-gray-900 bg-gray-50" : "border-slate-200"}`}
                       onClick={() => setLang("en")}
                     >
                       <span className="fi fi-gb rounded-[4px]" />
                       <span className="text-sm">English</span>
                     </button>
                     <button
-                      className={`flex items-center justify-center gap-2 rounded-md border p-2 ${lang === "el" ? "border-gray-900 bg-gray-50" : "border-gray-200"}`}
+                      className={`flex items-center justify-center gap-2 rounded-md border p-2 ${lang === "el" ? "border-gray-900 bg-gray-50" : "border-slate-200"}`}
                       onClick={() => setLang("el")}
                     >
                       <span className="fi fi-gr rounded-[4px]" />
@@ -182,19 +182,19 @@ const NewHeader = () => {
               <nav className="flex flex-col gap-3 p-4 text-gray-700">
                 <a
                   href="/"
-                  className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium"
+                  className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-3 font-medium"
                 >
                   Home
                 </a>
                 <a
                   href="/shop"
-                  className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium"
+                  className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-3 font-medium"
                 >
                   Shop
                 </a>
                 <a
                   href="/contact"
-                  className="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 font-medium"
+                  className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-4 py-3 font-medium"
                 >
                   Contact
                 </a>

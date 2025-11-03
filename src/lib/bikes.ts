@@ -11,7 +11,8 @@ import {
 const READY_TABLE = 'bike-discount'
 const IN_STOCK_TABLE = 'in-stock'
 const VARIANT_TABLE = 'bike-variants'
-const ITEMS_PER_PAGE = 12
+// Default page size for listings
+const ITEMS_PER_PAGE = 20
 
 type ReadyBikeRow = {
   id: number

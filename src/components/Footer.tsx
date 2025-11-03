@@ -21,11 +21,11 @@ export default function Footer() {
       initial="hidden"
       animate="show"
       variants={container}
-      className="w-full border-t border-gray-300 sm:border-none h-[58px] text-black font-semibold transform text-[12px] md:text-sm bg-gray-100"
+      className="w-full border-t border-slate-200 sm:border-none h-[58px] text-black font-medium transform text-[12px] md:text-sm bg-gray-100"
     >
       <div className="flex flex-row items-center justify-between px-6 py-0 2xl:px-20 transform translate-y-[20px] sm:translate-y-[18px]">
           <motion.div variants={item}>
-            <Link href="/shop" className="font-semibold cursor-pointer">
+            <Link href="/shop" className="font-medium cursor-pointer">
               ©2025 I LOVE MY BIKE
             </Link>
           </motion.div>

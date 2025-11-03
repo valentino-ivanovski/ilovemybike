@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { ShopSection } from "@/lib/types";
 
-type NewCardProps = ComponentPropsWithoutRef<"div"> & {
+type NewCardShopProps = ComponentPropsWithoutRef<"div"> & {
   id: string;
   title: string;
   brand?: string;
@@ -22,7 +22,7 @@ type NewCardProps = ComponentPropsWithoutRef<"div"> & {
   section?: ShopSection;
 };
 
-export default function NewCard({
+export default function NewCardShop({
   id,
   title,
   brand,
@@ -36,7 +36,7 @@ export default function NewCard({
   ctaLabel = "Explore",
   section = "in-stock",
   className = "",
-}: NewCardProps) {
+}: NewCardShopProps) {
   const { addToFavorites, removeFromFavorites, isInFavorites } = useCart();
   const [isFav, setIsFav] = useState(false);
   const router = useRouter();
@@ -131,21 +131,23 @@ export default function NewCard({
           {category}
           {subcategory ? ` · ${subcategory}` : ""}
         </p>
-        <button
-          type="button"
-          onClick={(e: MouseEvent) => { e.stopPropagation(); handleToggleFavorite(); }}
-          onKeyDown={(e: KeyboardEvent) => e.stopPropagation()}
-          aria-pressed={isFav}
-          aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
-          className="group relative flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-700 cursor-pointer"
-        >
-          {isFav ? (
-            <FiHeart className="text-sm text-red-500 fill-red-500" />
-          ) : (
-            <FiHeart className="text-sm text-slate-600" />
-          )}
-          <span>{compareLabel}</span>
-        </button>
+          <motion.button
+            type="button"
+            onClick={(e: MouseEvent) => { e.stopPropagation(); handleToggleFavorite(); }}
+            onKeyDown={(e: KeyboardEvent) => e.stopPropagation()}
+            aria-pressed={isFav}
+            aria-label={isFav ? "Remove from favorites" : "Add to favorites"}
+            className="group relative flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-700 cursor-pointer select-none"
+            whileHover={{ scale: 1.07, transition: { type: "spring", stiffness: 400, damping: 18 } }}
+            whileTap={{ scale: 0.92, transition: { type: "spring", stiffness: 300, damping: 22 } }}
+          >
+            {isFav ? (
+              <FiHeart className="text-sm text-red-500 fill-red-500" />
+            ) : (
+              <FiHeart className="text-sm text-slate-600" />
+            )}
+            <span>{compareLabel}</span>
+          </motion.button>
       </div>
     </motion.div>
   );
