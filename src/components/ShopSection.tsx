@@ -9,6 +9,7 @@ import type { InStockBikeWithVariants } from "@/lib/types";
 import NewCard from "./NewCard";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { IoMdSearch } from "react-icons/io";
 import {
   pageVariants,
   sideReveal,
@@ -36,6 +37,15 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
   const [quoteIndex, setQuoteIndex] = useState(0);
   const cycleQuote = (direction: 1 | -1) => {
     setQuoteIndex((prev) => (prev + direction + quotes.length) % quotes.length);
+  };
+
+  const [selectedTab, setSelectedTab] = useState<"in-stock" | "order">("in-stock");
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+
+  const toggleBrand = (brand: string) => {
+    setSelectedBrands((prev) =>
+      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
+    );
   };
 
   // Smooth horizontal scrolling for wheel/trackpad input using GSAP
@@ -108,9 +118,78 @@ export default function HeroSection({ popularBikes }: HeroSectionProps) {
         {/* Left Side */}
         <motion.div variants={sideReveal} className="w-full h-full md:w-1/4  bg-gray-100 border-r flex flex-col">
           
-          {/* Left */}
+          {/* Left UP */}
           <div className="relative w-full h-full md:h-1/2">
-            <motion.div variants={stackContainer} className="div1 relative h-full w-full">
+            <div className="w-full h-[54px] bg-white flex flex-row gap-[6px] justify-start items-center pl-[23px] border-b border-slate-200">
+                <IoMdSearch className="text-black/50 transform translate-y-[0.5px]"/>
+                <input
+                  type="text"
+                  placeholder="SEARCH BIKES..."
+                  className="text-sm outline-none bg-white w-full placeholder-black/50 tracking-[0.03em]"
+                />
+            </div>
+            <div className="w-full h-[48px] flex flex-row justify-between border-b border-slate-200 items-center text-sm">
+                <button 
+                  onClick={() => setSelectedTab("in-stock")}
+                  className={`h-full w-1/2 cursor-pointer border-r border-slate-200 transition duration-100 hover:bg-gray-100 ${selectedTab === "in-stock" ? "bg-gray-100" : "bg-white"} select-none`}
+                >
+                  <p>IN STOCK</p>
+                </button>
+                <button 
+                  onClick={() => setSelectedTab("order")}
+                  className={`h-full w-1/2 cursor-pointer transition duration-100 hover:bg-gray-100 ${selectedTab === "order" ? "bg-gray-100" : "bg-white"} select-none`}
+                >
+                  <p>ORDER</p>
+                </button>
+            </div>
+
+
+            <div>
+              
+            </div>
+              
+            <div className="w-full bg-white border-b border-slate-200 h-[48px] flex items-center pl-[23px] relative text-sm select-none cursor-pointer">
+              <span>CATEGORY</span>
+              <IoIosArrowDown className="absolute right-[20px] text-black/60" />
+            </div>
+            <div className="w-full bg-white border-b border-slate-200 h-[48px] flex items-center pl-[23px] relative text-sm select-none cursor-pointer">
+              <span>SUBCATEGORY</span>
+              <IoIosArrowDown className="absolute right-[20px] text-black/60" />
+            </div>  
+
+            <div className="h-[97px] w-full grid grid-cols-2 border-b border-slate-200">
+              <button
+                onClick={() => toggleBrand("back")}
+                className={`h-[48px] cursor-pointer transition duration-100 text-sm flex items-center justify-center border-r border-slate-200 ${selectedBrands.includes("back") ? "bg-gray-100" : "bg-white hover:bg-gray-100"} select-none`}
+              >
+                <Image src="/logos/bach.png" alt="Back" width={100} height={30} className="object-contain" draggable={false} />
+              </button>
+              <button
+                onClick={() => toggleBrand("orient")}
+                className={`h-[48px] cursor-pointer transition duration-100 text-sm flex items-center justify-center ${selectedBrands.includes("orient") ? "bg-gray-100" : "bg-white hover:bg-gray-100"} select-none`}
+              >
+                <Image src="/logos/orient-logo-black.svg" alt="Orient" width={100} height={30} className="object-contain" draggable={false} />
+              </button>
+              <button
+                onClick={() => toggleBrand("samebike")}
+                className={`h-[48px] cursor-pointer transition duration-100 text-sm flex items-center justify-center border-r border-t border-slate-200 ${selectedBrands.includes("samebike") ? "bg-gray-100" : "bg-white hover:bg-gray-100"} select-none`}
+              >
+                <Image src="/logos/samebike.png" alt="Samebike" width={100} height={30} className="object-contain" draggable={false} />
+              </button>
+              <button
+                onClick={() => toggleBrand("shengmilo")}
+                className={`h-[48px] cursor-pointer transition duration-100 text-sm flex items-center justify-center border-t border-slate-200 ${selectedBrands.includes("shengmilo") ? "bg-gray-100" : "bg-white hover:bg-gray-100"} select-none`}
+              >
+                <Image src="/logos/shengmilo.png" alt="Shengmilo" width={85} height={30} className="object-contain" draggable={false} />
+              </button>
+            </div>
+
+          </div>
+
+
+          {/* Left DOWN */}
+          <div className="relative w-full h-full md:h-1/2 bg-black">
+            <motion.div variants={stackContainer} className="div1 relative h-full w-full bg-blue-300">
             </motion.div>
           </div>
         </motion.div>
