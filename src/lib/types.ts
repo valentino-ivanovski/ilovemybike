@@ -41,6 +41,11 @@ export interface BikeVariant {
 export interface SectionFilters {
   category?: string
   subcategory?: string
+  // Optional filter by brand name(s)
+  brand?: string | string[]
+  // Optional price range filters
+  minPrice?: number
+  maxPrice?: number
   sortBy: 'price' | 'title'
   sortOrder: 'asc' | 'desc'
   page: number

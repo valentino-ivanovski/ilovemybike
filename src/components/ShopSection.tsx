@@ -6,7 +6,7 @@ import type { Variants } from "framer-motion";
 import { IoIosArrowDown } from "react-icons/io";
 import Link from "next/link";
 import type { InStockBikeWithVariants, PaginatedBikes } from "@/lib/types";
-import { getInStockBikes, getInStockCategories, getInStockSubcategories } from "@/lib/bikes";
+import { getAllInStockBikes, getInStockCategories, getInStockSubcategories } from "@/lib/bikes";
 import NewCard from "./NewCard";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
@@ -62,15 +62,17 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
     );
   };
 
-  // Load a specific page of in-stock bikes
+  const PER_PAGE = 20;
+
+  // Load bikes for a specific page (compute pagination client-side)
   const loadPage = async (page: number) => {
     try {
       setLoading(true);
-      const data = await getInStockBikes(
+      const allBikes = await getAllInStockBikes(
         {
           sortBy: sortByKey,
           sortOrder,
-          page,
+          page: 1,
           category: selectedCategory,
           subcategory: selectedSubcategory,
           brand: selectedBrands.length ? selectedBrands : undefined,
@@ -96,8 +98,36 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
         },
         { includeVariants: false }
       );
-      setPageData(data);
-      setCurrentPage(data.page);
+
+      // Sort by price using effective price (new_price fallback to old_price) if needed
+      let working = [...allBikes];
+      if (sortByKey === "price") {
+        const getPrice = (b: InStockBikeWithVariants) => (b.new_price ?? b.old_price) || 0;
+        working.sort((a, b) => {
+          const pa = getPrice(a);
+          const pb = getPrice(b);
+          return sortOrder === "asc" ? pa - pb : pb - pa;
+        });
+      } else {
+        // Ensure stable title sort (case-insensitive)
+        working.sort((a, b) => {
+          const ta = a.title.toLowerCase();
+          const tb = b.title.toLowerCase();
+          if (ta < tb) return sortOrder === "asc" ? -1 : 1;
+          if (ta > tb) return sortOrder === "asc" ? 1 : -1;
+          return 0;
+        });
+      }
+
+      const total = working.length;
+      const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+      const safePage = Math.max(1, Math.min(page, totalPages));
+      const from = (safePage - 1) * PER_PAGE;
+      const to = from + PER_PAGE;
+      const pageSlice = working.slice(from, to);
+
+      setPageData({ bikes: pageSlice, total, page: safePage, totalPages });
+      setCurrentPage(safePage);
       // Reset scroll position to start on page change
       const els = [desktopScrollRef.current, mobileScrollRef.current].filter(Boolean) as HTMLDivElement[];
       els.forEach((el) => {
@@ -156,6 +186,12 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
     loadPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortByKey, sortOrder, selectedPriceRange]);
+
+  // Initial load ensure client-side pagination consistency
+  useEffect(() => {
+    loadPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Smooth horizontal scrolling for wheel/trackpad input using GSAP
   useEffect(() => {
@@ -220,15 +256,15 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
       initial="hidden"
       animate="show"
       variants={pageVariants}
-      className="relative h-[calc(100vh-55px)] md:h-[calc(100vh-106px)] flex items-center justify-center overflow-hidden"
+      className="relative md:h-[calc(100vh-106px)] flex items-start justify-start md:items-center md:justify-center overflow-hidden"
     >
       <div className="w-full h-full flex flex-col md:flex-row">
         
         {/* Left Side */}
-        <motion.div variants={sideReveal} className="w-full h-full md:w-1/4  bg-gray-100 border-r flex flex-col">
+        <motion.div variants={sideReveal} className="w-full h-auto md:h-full md:w-1/4  bg-gray-100 border-r flex flex-col">
           
           {/* Left UP */}
-          <div className="relative w-full h-full md:h-1/2">
+          <div className="relative w-full h-auto md:h-auto">
             <div className="w-full h-[54px] bg-white flex flex-row gap-[6px] justify-start items-center pl-[23px] border-b border-slate-200">
                 <IoMdSearch className="text-black/50 transform translate-y-[0.5px]"/>
                 <input
@@ -321,7 +357,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
                   {selectedSubcategory ? (
                     <>SUBCATEGORY: <span className="uppercase">{selectedSubcategory}</span></>
                   ) : (
-                    "SUBCATEGORY"
+                    "SUBCATEGORY: ALL"
                   )}
                 </span>
                 <IoIosArrowDown className={`absolute right-[20px] text-black/60 transition-transform ${showSubcategoryList ? "rotate-180" : "rotate-0"}`} />
@@ -336,7 +372,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
                     className="w-full bg-white border-b border-slate-200 max-h-48 overflow-y-auto"
                   >
                   <button
-                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${!selectedSubcategory ? "bg-gray-100" : ""}`}
+                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light cursor-pointer ${!selectedSubcategory ? "bg-gray-100" : ""}`}
                     onClick={() => {
                       setSelectedSubcategory(undefined);
                       setShowSubcategoryList(false);
@@ -347,7 +383,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
                   {subcategories.map((sub) => (
                     <button
                       key={sub}
-                      className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${selectedSubcategory === sub ? "bg-gray-100" : ""}`}
+                      className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light cursor-pointer ${selectedSubcategory === sub ? "bg-gray-100" : ""}`}
                       onClick={() => {
                         setSelectedSubcategory(sub);
                         setShowSubcategoryList(false);
@@ -396,7 +432,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
               >
                 <span>
                   {sortByKey === "price" ? (
-                    <>PRICE: <span className="uppercase">{sortOrder === "asc" ? "LOW → HIGH" : "HIGH → LOW"}</span></>
+                    <>PRICE: <span className="uppercase ">{sortOrder === "asc" ? "LOW → HIGH" : "HIGH → LOW"}</span></>
                   ) : (
                     "PRICE"
                   )}
@@ -430,7 +466,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
                   >
                   <div className="px-3 py-2 text-[11px] tracking-wide text-black/60">SORT BY PRICE</div>
                   <button
-                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${sortByKey === "price" && sortOrder === "asc" ? "bg-gray-100" : ""}`}
+                      className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light cursor-pointer ${sortByKey === "price" && sortOrder === "asc" ? "bg-gray-100" : ""}`}
                     onClick={() => {
                       setSortByKey("price");
                       setSortOrder("asc");
@@ -440,7 +476,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
                     <span className="uppercase">LOW → HIGH</span>
                   </button>
                   <button
-                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${sortByKey === "price" && sortOrder === "desc" ? "bg-gray-100" : ""}`}
+                      className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light cursor-pointer ${sortByKey === "price" && sortOrder === "desc" ? "bg-gray-100" : ""}`}
                     onClick={() => {
                       setSortByKey("price");
                       setSortOrder("desc");
@@ -448,16 +484,6 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
                     }}
                   >
                     <span className="uppercase">HIGH → LOW</span>
-                  </button>
-                  <button
-                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${sortByKey === "title" ? "bg-gray-100" : ""}`}
-                    onClick={() => {
-                      setSortByKey("title");
-                      setSortOrder("asc");
-                      setShowPriceList(false);
-                    }}
-                  >
-                    <span className="uppercase">DEFAULT (TITLE)</span>
                   </button>
 
                   <div className="px-3 pt-3 pb-2 text-[11px] tracking-wide text-black/60">PRICE RANGE</div>
@@ -472,7 +498,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
                   ].map((r) => (
                     <button
                       key={r.key}
-                      className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${selectedPriceRange === r.key || (!selectedPriceRange && r.key === "ALL") ? "bg-gray-100" : ""}`}
+                        className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light cursor-pointer ${selectedPriceRange === r.key || (!selectedPriceRange && r.key === "ALL") ? "bg-gray-100" : ""}`}
                       onClick={() => {
                         setSelectedPriceRange(r.key === "ALL" ? undefined : (r.key as string));
                         setShowPriceList(false);
@@ -581,25 +607,25 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
     </motion.section>
 
     {/* Center-bottom pagination overlay */}
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
-      <div className="flex items-center gap-3 rounded-full border border-black/30 bg-white/90 backdrop-blur px-3 py-2 shadow-lg">
-        <span className="text-xs text-black tracking-wide">
-          Page {pageData.page} of {pageData.totalPages}
-        </span>
+    <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-50">
+      <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white/90 backdrop-blur px-2 py-2 shadow-lg">
         <button
           onClick={() => loadPage(Math.max(1, pageData.page - 1))}
           disabled={loading || pageData.page <= 1}
-          className={`px-3 py-1.5 text-xs border border-black/30 text-black rounded-md transition ${
-            pageData.page <= 1 || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-black/10"
+          className={`px-3 py-1.5 text-xs border border-slate-200 text-black rounded-full transition ${
+            pageData.page <= 1 || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100 cursor-pointer"
           }`}
         >
           Prev
         </button>
+        <span className="text-xs text-black tracking-wide select-none">
+          Page {pageData.page} of {pageData.totalPages}
+        </span>
         <button
           onClick={() => loadPage(Math.min(pageData.totalPages, pageData.page + 1))}
           disabled={loading || pageData.page >= pageData.totalPages}
-          className={`px-3 py-1.5 text-xs border border-black/30 text-black rounded-md transition ${
-            pageData.page >= pageData.totalPages || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-black/10"
+          className={`px-3 py-1.5 text-xs border border-slate-200 text-black rounded-full transition ${
+            pageData.page >= pageData.totalPages || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100 cursor-pointer"
           }`}
         >
           Next

@@ -18,7 +18,15 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "www.shengmilo-bikes.com",
-      }
+      }, 
+      {
+        protocol: "https",
+        hostname: "www.burchda-official.com",
+      },
+      {
+        protocol: "https",
+        hostname: "burchda-official.com",
+      },
     ],
   },
   async headers() {

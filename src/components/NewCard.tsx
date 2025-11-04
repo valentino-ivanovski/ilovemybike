@@ -127,7 +127,7 @@ export default function NewCardShop({
       </div>
 
       <div className="flex z-10 items-center justify-between px-4 pb-4 pt-2">
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 uppercase">
           {category}
           {subcategory ? ` · ${subcategory}` : ""}
         </p>

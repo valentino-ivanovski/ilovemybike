@@ -404,6 +404,150 @@ export async function getInStockSubcategories(category?: string): Promise<string
   return [...new Set(subcategories)].sort((a, b) => a.localeCompare(b))
 }
 
+export async function getAllInStockBikes(
+  filters: SectionFilters,
+  options: { includeVariants?: boolean } = {}
+): Promise<InStockBikeWithVariants[]> {
+  const { category, subcategory, brand, minPrice, maxPrice, sortBy, sortOrder } = filters
+
+  let query = supabase
+    .from(IN_STOCK_TABLE)
+    .select('*')
+
+  if (category) {
+    query = query.ilike('category', category)
+  }
+
+  if (subcategory) {
+    query = query.ilike('subcategory', `%${subcategory}%`)
+  }
+
+  if (brand) {
+    if (Array.isArray(brand)) {
+      const list = brand.filter(Boolean).map((b) => b.trim()).filter(Boolean)
+      if (list.length === 1) {
+        query = query.ilike('brand', `%${list[0]}%`)
+      } else if (list.length > 1) {
+        const orExpr = list.map((b) => `brand.ilike.%${b}%`).join(',')
+        query = query.or(orExpr)
+      }
+    } else if (typeof brand === 'string' && brand.trim()) {
+      query = query.ilike('brand', `%${brand.trim()}%`)
+    }
+  }
+
+  const hasMin = typeof minPrice === 'number'
+  const hasMax = typeof maxPrice === 'number'
+  if (hasMin && hasMax) {
+    query = query.or(
+      `and(new_price.gte.${minPrice},new_price.lte.${maxPrice}),and(old_price.gte.${minPrice},old_price.lte.${maxPrice})`
+    )
+  } else if (hasMin) {
+    query = query.or(`new_price.gte.${minPrice},old_price.gte.${minPrice}`)
+  } else if (hasMax) {
+    query = query.or(`new_price.lte.${maxPrice},old_price.lte.${maxPrice}`)
+  }
+
+  if (sortBy === 'price') {
+    query = query.order('new_price', {
+      ascending: sortOrder === 'asc',
+      nullsFirst: false
+    }).order('old_price', {
+      ascending: sortOrder === 'asc',
+      nullsFirst: false
+    })
+  } else {
+    query = query.order('title', { ascending: sortOrder === 'asc' })
+  }
+
+  const { data, error } = await query
+
+  if (error) {
+    throw new Error(`Failed to fetch all in-stock bikes: ${error.message}`)
+  }
+
+  const mapped = (data as InStockBikeRow[] | null)?.map(mapInStockBike) ?? []
+  return attachVariantsToBikes(mapped, options.includeVariants)
+}
+
+export async function getAllInStockBikesPaginated(
+  filters: SectionFilters,
+  options: { includeVariants?: boolean } = {}
+): Promise<PaginatedBikes<InStockBikeWithVariants>> {
+  const { category, subcategory, brand, minPrice, maxPrice, sortBy, sortOrder, page } = filters
+  const { from, to, page: safePage } = buildPagination(page)
+
+  let query = supabase
+    .from(IN_STOCK_TABLE)
+    .select('*', { count: 'exact' })
+
+  if (category) {
+    query = query.ilike('category', category)
+  }
+
+  if (subcategory) {
+    query = query.ilike('subcategory', `%${subcategory}%`)
+  }
+
+  if (brand) {
+    if (Array.isArray(brand)) {
+      const list = brand.filter(Boolean).map((b) => b.trim()).filter(Boolean)
+      if (list.length === 1) {
+        query = query.ilike('brand', `%${list[0]}%`)
+      } else if (list.length > 1) {
+        const orExpr = list.map((b) => `brand.ilike.%${b}%`).join(',')
+        query = query.or(orExpr)
+      }
+    } else if (typeof brand === 'string' && brand.trim()) {
+      query = query.ilike('brand', `%${brand.trim()}%`)
+    }
+  }
+
+  const hasMin = typeof minPrice === 'number'
+  const hasMax = typeof maxPrice === 'number'
+  if (hasMin && hasMax) {
+    query = query.or(
+      `and(new_price.gte.${minPrice},new_price.lte.${maxPrice}),and(old_price.gte.${minPrice},old_price.lte.${maxPrice})`
+    )
+  } else if (hasMin) {
+    query = query.or(`new_price.gte.${minPrice},old_price.gte.${minPrice}`)
+  } else if (hasMax) {
+    query = query.or(`new_price.lte.${maxPrice},old_price.lte.${maxPrice}`)
+  }
+
+  if (sortBy === 'price') {
+    query = query.order('new_price', {
+      ascending: sortOrder === 'asc',
+      nullsFirst: false
+    }).order('old_price', {
+      ascending: sortOrder === 'asc',
+      nullsFirst: false
+    })
+  } else {
+    query = query.order('title', { ascending: sortOrder === 'asc' })
+  }
+
+  query = query.range(from, to)
+
+  const { data, error, count } = await query
+  if (error) {
+    throw new Error(`Failed to fetch in-stock bikes (all, paginated): ${error.message}`)
+  }
+
+  const total = count || 0
+  const mapped = (data as InStockBikeRow[] | null)?.map(mapInStockBike) ?? []
+  const bikesWithVariants = await attachVariantsToBikes(mapped, options.includeVariants)
+
+  const totalPages = total === 0 ? 1 : Math.ceil(total / ITEMS_PER_PAGE)
+
+  return {
+    bikes: bikesWithVariants,
+    total,
+    page: safePage,
+    totalPages
+  }
+}
+
 export async function getPopularInStockBikes(
   options: { includeVariants?: boolean } = {}
 ): Promise<InStockBikeWithVariants[]> {

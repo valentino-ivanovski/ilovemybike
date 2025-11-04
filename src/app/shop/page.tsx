@@ -1,10 +1,10 @@
 import NewHeader from "@/components/NewHeader"
 import ShopSection from "@/components/ShopSection"
 import Footer from "@/components/Footer"
-import { getInStockBikes } from "@/lib/bikes";
+import { getAllInStockBikes } from "@/lib/bikes";
 
 export default async function ShopPage() {
-  const initialPageData = await getInStockBikes(
+  const all = await getAllInStockBikes(
     {
       sortBy: "title",
       sortOrder: "asc",
@@ -12,6 +12,13 @@ export default async function ShopPage() {
     },
     { includeVariants: false }
   );
+  const PER_PAGE = 20;
+  const initialPageData = {
+    bikes: all.slice(0, PER_PAGE),
+    total: all.length,
+    page: 1,
+    totalPages: Math.max(1, Math.ceil(all.length / PER_PAGE)),
+  };
 
   return (
     <>
