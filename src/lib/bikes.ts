@@ -284,7 +284,7 @@ export async function getInStockBikes(
   filters: SectionFilters,
   options: { includeVariants?: boolean } = {}
 ): Promise<PaginatedBikes<InStockBikeWithVariants>> {
-  const { category, subcategory, sortBy, sortOrder, page } = filters
+  const { category, subcategory, brand, minPrice, maxPrice, sortBy, sortOrder, page } = filters
   const { from, to, page: safePage } = buildPagination(page)
 
   let query = supabase
@@ -298,6 +298,37 @@ export async function getInStockBikes(
 
   if (subcategory) {
     query = query.ilike('subcategory', `%${subcategory}%`)
+  }
+
+  // Optional brand filter: support single string or array of strings (OR semantics)
+  if (brand) {
+    if (Array.isArray(brand)) {
+      const list = brand.filter(Boolean).map((b) => b.trim()).filter(Boolean)
+      if (list.length === 1) {
+        query = query.ilike('brand', `%${list[0]}%`)
+      } else if (list.length > 1) {
+        const orExpr = list.map((b) => `brand.ilike.%${b}%`).join(',')
+        query = query.or(orExpr)
+      }
+    } else if (typeof brand === 'string' && brand.trim()) {
+      query = query.ilike('brand', `%${brand.trim()}%`)
+    }
+  }
+
+  // Optional price filtering using new_price OR old_price as effective price
+  const hasMin = typeof minPrice === 'number'
+  const hasMax = typeof maxPrice === 'number'
+  if (hasMin && hasMax) {
+    // (new between min/max) OR (old between min/max)
+    query = query.or(
+      `and(new_price.gte.${minPrice},new_price.lte.${maxPrice}),and(old_price.gte.${minPrice},old_price.lte.${maxPrice})`
+    )
+  } else if (hasMin) {
+    // new >= min OR old >= min
+    query = query.or(`new_price.gte.${minPrice},old_price.gte.${minPrice}`)
+  } else if (hasMax) {
+    // new <= max OR old <= max
+    query = query.or(`new_price.lte.${maxPrice},old_price.lte.${maxPrice}`)
   }
 
   if (sortBy === 'price') {

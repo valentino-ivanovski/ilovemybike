@@ -51,6 +51,10 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
   const [subcategories, setSubcategories] = useState<string[]>([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | undefined>(undefined);
   const [showSubcategoryList, setShowSubcategoryList] = useState(false);
+  const [showPriceList, setShowPriceList] = useState(false);
+  const [sortByKey, setSortByKey] = useState<"title" | "price">("title");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [selectedPriceRange, setSelectedPriceRange] = useState<string | undefined>(undefined);
 
   const toggleBrand = (brand: string) => {
     setSelectedBrands((prev) =>
@@ -64,11 +68,31 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
       setLoading(true);
       const data = await getInStockBikes(
         {
-          sortBy: "title",
-          sortOrder: "asc",
+          sortBy: sortByKey,
+          sortOrder,
           page,
           category: selectedCategory,
           subcategory: selectedSubcategory,
+          brand: selectedBrands.length ? selectedBrands : undefined,
+          ...(() => {
+            // Map selected range key to min/max
+            switch (selectedPriceRange) {
+              case "UNDER_1000":
+                return { minPrice: undefined, maxPrice: 1000 };
+              case "1000_1500":
+                return { minPrice: 1000, maxPrice: 1500 };
+              case "1500_2000":
+                return { minPrice: 1500, maxPrice: 2000 };
+              case "2000_2500":
+                return { minPrice: 2000, maxPrice: 2500 };
+              case "2500_3000":
+                return { minPrice: 2500, maxPrice: 3000 };
+              case "3000_PLUS":
+                return { minPrice: 3000, maxPrice: undefined };
+              default:
+                return {} as any;
+            }
+          })(),
         },
         { includeVariants: false }
       );
@@ -102,12 +126,10 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
     (async () => {
       try {
         setSelectedSubcategory(undefined);
-        if (selectedCategory) {
-          const subs = await getInStockSubcategories(selectedCategory);
-          setSubcategories(subs);
-        } else {
-          setSubcategories([]);
-        }
+        // If a category is selected, get its subcategories.
+        // Otherwise, fetch ALL subcategories so users can filter by subcategory with category = All.
+        const subs = await getInStockSubcategories(selectedCategory);
+        setSubcategories(subs);
       } finally {
         // noop
       }
@@ -122,6 +144,18 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
     loadPage(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSubcategory]);
+
+  // When brand selection changes, refresh list to page 1
+  useEffect(() => {
+    loadPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedBrands]);
+
+  // When sort options or price range change, refresh list to page 1
+  useEffect(() => {
+    loadPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortByKey, sortOrder, selectedPriceRange]);
 
   // Smooth horizontal scrolling for wheel/trackpad input using GSAP
   useEffect(() => {
@@ -203,7 +237,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
                   className="text-sm outline-none bg-white w-full placeholder-black/50 tracking-[0.03em]"
                 />
             </div>
-            <div className="w-full h-[48px] flex flex-row justify-between border-b border-slate-200 items-center text-sm">
+            <div className="w-full h-[51px] flex flex-row justify-between border-b border-slate-200 items-center text-sm">
                 <button 
                   onClick={() => setSelectedTab("in-stock")}
                   className={`h-full w-1/2 cursor-pointer border-r border-slate-200 transition duration-100 hover:bg-gray-100 ${selectedTab === "in-stock" ? "bg-gray-100" : "bg-white"} select-none`}
@@ -228,40 +262,54 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
                 onClick={() => setShowCategoryList((s) => !s)}
                 className="w-full bg-white border-b border-slate-200 h-[48px] flex items-center pl-[23px] relative text-sm select-none cursor-pointer text-left"
               >
-                <span>{selectedCategory ? `CATEGORY: ${selectedCategory}` : "CATEGORY"}</span>
-                <IoIosArrowDown className="absolute right-[20px] text-black/60" />
+                <span>
+                  {selectedCategory ? (
+                    <>CATEGORY: <span className="uppercase">{selectedCategory}</span></>
+                  ) : (
+                    "CATEGORY: ALL"
+                  )}
+                </span>
+                <IoIosArrowDown className={`absolute right-[20px] text-black/60 transition-transform ${showCategoryList ? "rotate-180" : "rotate-0"}`} />
               </button>
-              {showCategoryList && (
-                <div className="absolute left-0 right-0 top-full z-30 bg-white border border-slate-200 shadow-lg rounded-md mt-[1px] max-h-48 overflow-y-auto">
+              <AnimatePresence initial={false}>
+                {showCategoryList && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
+                    className="w-full bg-white border-b border-slate-200 max-h-48 overflow-y-auto"
+                  >
                   {categories.length === 0 ? (
                     <div className="text-xs text-black/60 p-3">Loading categories...</div>
                   ) : (
                     <>
                       <button
-                        className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 ${!selectedCategory ? "bg-gray-100" : ""}`}
+                        className={`w-full text-left text-sm cursor-pointer px-4 py-2 hover:bg-gray-100 font-light ${!selectedCategory ? "bg-gray-100" : ""}`}
                         onClick={() => {
                           setSelectedCategory(undefined);
                           setShowCategoryList(false);
                         }}
                       >
-                        All categories
+                        ALL
                       </button>
                       {categories.map((cat) => (
                         <button
                           key={cat}
-                          className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 ${selectedCategory === cat ? "bg-gray-100" : ""}`}
+                          className={`w-full text-left text-sm cursor-pointer px-4 py-2 hover:bg-gray-100 font-light ${selectedCategory === cat ? "bg-gray-100" : ""}`}
                           onClick={() => {
                             setSelectedCategory(cat);
                             setShowCategoryList(false);
                           }}
                         >
-                          {cat}
+                          <span className="uppercase">{cat}</span>
                         </button>
                       ))}
                     </>
                   )}
-                </div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             <div className="relative">
               <button
@@ -269,42 +317,56 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
                 className="w-full bg-white border-b border-slate-200 h-[48px] flex items-center pl-[23px] relative text-sm select-none cursor-pointer text-left disabled:opacity-50"
                 disabled={subcategories.length === 0}
               >
-                <span>{selectedSubcategory ? `SUBCATEGORY: ${selectedSubcategory}` : "SUBCATEGORY"}</span>
-                <IoIosArrowDown className="absolute right-[20px] text-black/60" />
+                <span>
+                  {selectedSubcategory ? (
+                    <>SUBCATEGORY: <span className="uppercase">{selectedSubcategory}</span></>
+                  ) : (
+                    "SUBCATEGORY"
+                  )}
+                </span>
+                <IoIosArrowDown className={`absolute right-[20px] text-black/60 transition-transform ${showSubcategoryList ? "rotate-180" : "rotate-0"}`} />
               </button>
-              {showSubcategoryList && (
-                <div className="absolute left-0 right-0 top-full z-30 bg-white border border-slate-200 shadow-lg rounded-md mt-[1px] max-h-48 overflow-y-auto">
+              <AnimatePresence initial={false}>
+                {showSubcategoryList && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
+                    className="w-full bg-white border-b border-slate-200 max-h-48 overflow-y-auto"
+                  >
                   <button
-                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 ${!selectedSubcategory ? "bg-gray-100" : ""}`}
+                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${!selectedSubcategory ? "bg-gray-100" : ""}`}
                     onClick={() => {
                       setSelectedSubcategory(undefined);
                       setShowSubcategoryList(false);
                     }}
                   >
-                    All subcategories
+                    ALL
                   </button>
                   {subcategories.map((sub) => (
                     <button
                       key={sub}
-                      className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 ${selectedSubcategory === sub ? "bg-gray-100" : ""}`}
+                      className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${selectedSubcategory === sub ? "bg-gray-100" : ""}`}
                       onClick={() => {
                         setSelectedSubcategory(sub);
                         setShowSubcategoryList(false);
                       }}
                     >
-                      {sub}
+                      <span className="uppercase">{sub}</span>
                     </button>
                   ))}
-                </div>
-              )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="h-[97px] w-full grid grid-cols-2 border-b border-slate-200">
               <button
-                onClick={() => toggleBrand("back")}
-                className={`h-[48px] cursor-pointer transition duration-100 text-sm flex items-center justify-center border-r border-slate-200 ${selectedBrands.includes("back") ? "bg-gray-100" : "bg-white hover:bg-gray-100"} select-none`}
+                onClick={() => toggleBrand("burchda")}
+                className={`h-[48px] cursor-pointer transition duration-100 text-sm flex items-center justify-center border-r border-slate-200 ${selectedBrands.includes("burchda") ? "bg-gray-100" : "bg-white hover:bg-gray-100"} select-none`}
               >
-                <Image src="/logos/bach.png" alt="Back" width={100} height={30} className="object-contain" draggable={false} />
+                <Image src="/logos/bach.png" alt="burchda" width={100} height={30} className="object-contain" draggable={false} />
               </button>
               <button
                 onClick={() => toggleBrand("orient")}
@@ -326,39 +388,108 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
               </button>
             </div>
 
+            {/* PRICE DROPPER */}
+            <div className="relative">
+              <button
+                onClick={() => setShowPriceList((s) => !s)}
+                className="w-full bg-white border-b border-slate-200 h-[48px] flex items-center pl-[23px] relative text-sm select-none cursor-pointer text-left"
+              >
+                <span>
+                  {sortByKey === "price" ? (
+                    <>PRICE: <span className="uppercase">{sortOrder === "asc" ? "LOW → HIGH" : "HIGH → LOW"}</span></>
+                  ) : (
+                    "PRICE"
+                  )}
+                  {selectedPriceRange && (
+                    <span className="ml-2 text-[11px] text-black/60 uppercase relative -top-[1px]">
+                      {(() => {
+                        switch (selectedPriceRange) {
+                          case "UNDER_1000":
+                            return "UNDER €1000";
+                          case "3000_PLUS":
+                            return "€3000+";
+                          default: {
+                            const [min, max] = selectedPriceRange.split("_");
+                            return `€${min} - €${max}`;
+                          }
+                        }
+                      })()}
+                    </span>
+                  )}
+                </span>
+                <IoIosArrowDown className={`absolute right-[20px] text-black/60 transition-transform ${showPriceList ? "rotate-180" : "rotate-0"}`} />
+              </button>
+              <AnimatePresence initial={false}>
+                {showPriceList && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.22, ease: "easeOut" }}
+                    className="w-full bg-white border-b border-slate-200 max-h-64 overflow-y-auto p-1"
+                  >
+                  <div className="px-3 py-2 text-[11px] tracking-wide text-black/60">SORT BY PRICE</div>
+                  <button
+                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${sortByKey === "price" && sortOrder === "asc" ? "bg-gray-100" : ""}`}
+                    onClick={() => {
+                      setSortByKey("price");
+                      setSortOrder("asc");
+                      setShowPriceList(false);
+                    }}
+                  >
+                    <span className="uppercase">LOW → HIGH</span>
+                  </button>
+                  <button
+                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${sortByKey === "price" && sortOrder === "desc" ? "bg-gray-100" : ""}`}
+                    onClick={() => {
+                      setSortByKey("price");
+                      setSortOrder("desc");
+                      setShowPriceList(false);
+                    }}
+                  >
+                    <span className="uppercase">HIGH → LOW</span>
+                  </button>
+                  <button
+                    className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${sortByKey === "title" ? "bg-gray-100" : ""}`}
+                    onClick={() => {
+                      setSortByKey("title");
+                      setSortOrder("asc");
+                      setShowPriceList(false);
+                    }}
+                  >
+                    <span className="uppercase">DEFAULT (TITLE)</span>
+                  </button>
+
+                  <div className="px-3 pt-3 pb-2 text-[11px] tracking-wide text-black/60">PRICE RANGE</div>
+                  {[
+                    { key: "ALL", label: "ALL" },
+                    { key: "UNDER_1000", label: "UNDER €1000" },
+                    { key: "1000_1500", label: "€1000–€1500" },
+                    { key: "1500_2000", label: "€1500–€2000" },
+                    { key: "2000_2500", label: "€2000–€2500" },
+                    { key: "2500_3000", label: "€2500–€3000" },
+                    { key: "3000_PLUS", label: "€3000+" },
+                  ].map((r) => (
+                    <button
+                      key={r.key}
+                      className={`w-full text-left text-sm px-4 py-2 hover:bg-gray-100 font-light ${selectedPriceRange === r.key || (!selectedPriceRange && r.key === "ALL") ? "bg-gray-100" : ""}`}
+                      onClick={() => {
+                        setSelectedPriceRange(r.key === "ALL" ? undefined : (r.key as string));
+                        setShowPriceList(false);
+                      }}
+                    >
+                      <span className="uppercase">{r.label}</span>
+                    </button>
+                  ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
           </div>
 
 
-          {/* Left DOWN */}
-          <div className="relative w-full h-full md:h-1/2 bg-black">
-            <motion.div variants={stackContainer} className="div1 relative h-full w-full bg-gray-500">
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4">
-                <div className="text-white text-xs tracking-wide">
-                  Page {pageData.page} of {pageData.totalPages}
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => loadPage(Math.max(1, pageData.page - 1))}
-                    disabled={loading || pageData.page <= 1}
-                    className={`px-3 py-2 text-xs rounded-md border border-white/30 text-white transition ${
-                      pageData.page <= 1 || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
-                    }`}
-                  >
-                    Prev
-                  </button>
-                  <button
-                    onClick={() => loadPage(Math.min(pageData.totalPages, pageData.page + 1))}
-                    disabled={loading || pageData.page >= pageData.totalPages}
-                    className={`px-3 py-2 text-xs rounded-md border border-white/30 text-white transition ${
-                      pageData.page >= pageData.totalPages || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-white/10"
-                    }`}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          {/* Left DOWN removed in favor of center overlay pagination */}
         </motion.div>
 
         {/* Right Side */}
@@ -404,7 +535,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
           </div>
         </motion.div>
       </div>
-    </motion.section>
+  </motion.section>
     <motion.section initial="hidden" animate="show" variants={pageVariants} className="block md:hidden h-[calc(100vh-0px)]">
       <div className="w-full h-full md:w-1/2 bg-white flex flex-col">
         <div className="div3 flex md:hidden h-full bg-slate-100">
@@ -448,6 +579,33 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
         </div>
       </div>
     </motion.section>
+
+    {/* Center-bottom pagination overlay */}
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+      <div className="flex items-center gap-3 rounded-full border border-black/30 bg-white/90 backdrop-blur px-3 py-2 shadow-lg">
+        <span className="text-xs text-black tracking-wide">
+          Page {pageData.page} of {pageData.totalPages}
+        </span>
+        <button
+          onClick={() => loadPage(Math.max(1, pageData.page - 1))}
+          disabled={loading || pageData.page <= 1}
+          className={`px-3 py-1.5 text-xs border border-black/30 text-black rounded-md transition ${
+            pageData.page <= 1 || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-black/10"
+          }`}
+        >
+          Prev
+        </button>
+        <button
+          onClick={() => loadPage(Math.min(pageData.totalPages, pageData.page + 1))}
+          disabled={loading || pageData.page >= pageData.totalPages}
+          className={`px-3 py-1.5 text-xs border border-black/30 text-black rounded-md transition ${
+            pageData.page >= pageData.totalPages || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-black/10"
+          }`}
+        >
+          Next
+        </button>
+      </div>
+    </div>
   </>
   );
 }
