@@ -619,7 +619,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
           Prev
         </button>
         <span className="text-xs text-black tracking-wide select-none">
-          Page {pageData.page} of {pageData.totalPages}
+          {pageData.page} of {pageData.totalPages}
         </span>
         <button
           onClick={() => loadPage(Math.min(pageData.totalPages, pageData.page + 1))}
