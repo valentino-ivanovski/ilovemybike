@@ -607,7 +607,7 @@ export default function HeroSection({ initialPageData }: HeroSectionProps) {
     </motion.section>
 
     {/* Center-bottom pagination overlay */}
-    <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-50">
+    <div className="fixed bottom-18 left-1/2 -translate-x-1/2 z-50">
       <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white/90 backdrop-blur px-2 py-2 shadow-lg">
         <button
           onClick={() => loadPage(Math.max(1, pageData.page - 1))}
